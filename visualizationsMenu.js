@@ -81,7 +81,7 @@ class VisualizationsMenu {
     };
 
     #showAndHideMenu() {
-        if ((this.#p.mouseX < 200 && this.#p.mouseX > 5) || this.#isMenuForcedToDisplay) {
+        if ((this.#p.mouseX < 250 && this.#p.mouseX > 5) || this.#isMenuForcedToDisplay) {
             this.#menuContainer.style("display:block;");
         } else {
             this.#menuContainer.style("display:none;");
