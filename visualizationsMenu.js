@@ -1,101 +1,92 @@
-class VisualizationsMenu
-{
-	constructor(p)
-	{
-		this.#p = p;
-		//Container to hold all elements of this menu main menu 
-		this.#menuContainer = p.createDiv();
-		this.#menuContainer.style(`position: absolute;left:10px; top:200px; z-index:3; width:300px;height:70%;
+class VisualizationsMenu {
+    constructor(p) {
+        this.#p = p;
+        //Container to hold all elements of this menu main menu
+        this.#menuContainer = p.createDiv();
+        this.#menuContainer.style(`position: absolute;left:10px; top:200px; z-index:3; width:300px;height:70%;
 						      background-color:rgb(255, 0,0,0);display:none;text-align: left;font-size: 20px; font-weight: bold;color:rgb(39, 24, 179,.9)`);
-		this.#menuContainer.parent(document.body);
-		//This element selects audio track files from the PC, inspired by OpenAI[15].
-		this.#fileInput = this.#p.createFileInput(this.#handleMusic, false);
-		this.#fileInput.parent(this.#menuContainer);
-		this.#fileInput.style("position: absolute;left:10px; top:0px;font-size:20px");
-		//Holder for visualization options
-		this.#visOptionsMenu = p.createDiv("Select a visualisation:");
-		this.#visOptionsMenu.parent(this.#menuContainer);
-		this.#visOptionsMenu.style("position: absolute;left:10px; top:100px;font-size: 25px");
-		this.#playbackButton = new PlaybackButton(p);
-	}
-	//It adds a button for the visualizer which is passed as an argument to this function.
-    addVisualizationToHTML(visualizer)
-	{
-		let button = this.#p.createButton(this.#nextAvailableNumber+ "-  " +visualizer.name)
-		this.#nextAvailableNumber++
-		button.parent(this.#visOptionsMenu)
-		button.style(`background-color:rgb(61, 13, 88,.9);width:160px;height:40;text-align: left;font-size: 20px; font-weight: bold;
-			color:rgb(255,255,255,.9);margin-botton:10px;margin-top:10px; border-radius: 40px;`)
-		let visualizerName = button.html()
-		//it selects a visualization from visuals[] in visualizations 
-		button.mouseClicked((visualizerName)=>{soundApp.vis.selectVisual(visualizer.name)} )
-		//it changes the color tone when mouse goes over the button
-		button.mouseOver(()=>button.style("background-color:rgb(39, 24, 179,.9)"))
-		//it changes the color back to default  when mouse goes out
-		button.mouseOut(()=>button.style("background-color:rgb(61, 13, 81,.9)"))
-	}
-	//Responds to keyboard presses
-	keyPressed(keycode)
-	{  
-		//key code event for the space key is 32[16]
-		if(keycode == 32)
-		{
-			this.#isMenuForcedToDisplay = !this.#isMenuForcedToDisplay;
-			this.#showAndHideMenu();
-		} 
-	}
-	mouseMoved()
-	{
-		this.#showAndHideMenu();
-	}
+        this.#menuContainer.parent(document.body);
+        //This element selects audio track files from the PC, inspired by OpenAI[15].
+        this.#fileInput = this.#p.createFileInput(this.#handleMusic, false);
+        this.#fileInput.parent(this.#menuContainer);
+        this.#fileInput.style("position: absolute;left:10px; top:0px;font-size:20px");
+        //Holder for visualization options
+        this.#visOptionsMenu = p.createDiv("Select a visualisation:");
+        this.#visOptionsMenu.parent(this.#menuContainer);
+        this.#visOptionsMenu.style("position: absolute;left:10px; top:100px;font-size: 25px");
+        this.#playbackButton = new PlaybackButton(p);
+    }
+    //It adds a button for the visualizer which is passed as an argument to this function.
+    addVisualizationToHTML(visualizer) {
+        let button = this.#p.createButton(this.#nextAvailableNumber + "-  " + visualizer.name);
+        this.#nextAvailableNumber++;
+        button.parent(this.#visOptionsMenu);
+        button.style(`background-color:rgb(61, 13, 88,.9);width:160px;height:40;text-align: left;font-size: 20px; font-weight: bold;
+			color:rgb(255,255,255,.9);margin-botton:10px;margin-top:10px; border-radius: 40px;`);
+        let visualizerName = button.html();
+        //it selects a visualization from visuals[] in visualizations
+        button.mouseClicked((visualizerName) => {
+            soundApp.vis.selectVisual(visualizer.name);
+        });
+        //it changes the color tone when mouse goes over the button
+        button.mouseOver(() => button.style("background-color:rgb(39, 24, 179,.9)"));
+        //it changes the color back to default  when mouse goes out
+        button.mouseOut(() => button.style("background-color:rgb(61, 13, 81,.9)"));
+    }
+    //Responds to keyboard presses
+    keyPressed(keycode) {
+        //key code event for the space key is 32[16]
+        if (keycode == 32) {
+            this.#isMenuForcedToDisplay = !this.#isMenuForcedToDisplay;
+            this.#showAndHideMenu();
+        }
+    }
+    mouseMoved() {
+        this.#showAndHideMenu();
+    }
 
-
-	#p = null;
+    #p = null;
     #menuContainer = null;
-	#fileInput = null;
-	#visOptionsMenu = null;
-	//Forces menu be displayed when it is true
-	#isMenuForcedToDisplay = false;
-	//keeps the track of numbers for visualization selection keys used 
-	#nextAvailableNumber=1;
-	//instance of PlaybackButton to play and pause the music
-	#playbackButton = null;
+    #fileInput = null;
+    #visOptionsMenu = null;
+    //Forces menu be displayed when it is true
+    #isMenuForcedToDisplay = false;
+    //keeps the track of numbers for visualization selection keys used
+    #nextAvailableNumber = 1;
+    //instance of PlaybackButton to play and pause the music
+    #playbackButton = null;
 
-	//this is a call back function used by the file input element to load an audio track from a pc. Because it is a callback 
-	// function, I used an arrow function syntax to bind the scope to the instance of this class when it is called from fileInput().
-	// used arrow function to preserve the value of this from the outer scope[17]:
-	#handleMusic = (file)=>
-	{
-		if(file.type ==='audio')
-		{
-			if(soundApp.sound.isPlaying())
-			{
-				soundApp.sound.pause();
-				soundApp.sound = this.#p.loadSound(file.data, ()=>{soundApp.sound.loop()}, ()=>{alert("File successfully loaded")});
-			}
-			else
-			{
-				soundApp.sound = this.#p.loadSound(file.data);
-			}
-		}
-		else
-		{
-			alert("Select a file with audio format!")
-		}
-	}
+    //this is a call back function used by the file input element to load an audio track from a pc. Because it is a callback
+    // function, I used an arrow function syntax to bind the scope to the instance of this class when it is called from fileInput().
+    // used arrow function to preserve the value of this from the outer scope[17]:
+    #handleMusic = (file) => {
+        if (file.type === "audio") {
+            if (soundApp.sound.isPlaying()) {
+                soundApp.sound.pause();
+                soundApp.sound = this.#p.loadSound(
+                    file.data,
+                    () => {
+                        soundApp.sound.loop();
+                    },
+                    () => {
+                        alert("File successfully loaded");
+                    },
+                );
+            } else {
+                soundApp.sound = this.#p.loadSound(file.data);
+            }
+        } else {
+            alert("Select a file with audio format!");
+        }
+    };
 
-	#showAndHideMenu()
-	{
-		if ( (this.#p.mouseX < 130 && this.#p.mouseX >5) || this.#isMenuForcedToDisplay )
-		{
-			this.#menuContainer.style("display:block;")
-		}
-		else
-		{
-			this.#menuContainer.style("display:none;")
-		}
-	}
-
+    #showAndHideMenu() {
+        if ((this.#p.mouseX < 200 && this.#p.mouseX > 5) || this.#isMenuForcedToDisplay) {
+            this.#menuContainer.style("display:block;");
+        } else {
+            this.#menuContainer.style("display:none;");
+        }
+    }
 }
 /*
 +--------------------------------------------------------------------------+

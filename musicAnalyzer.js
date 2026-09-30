@@ -1,58 +1,51 @@
-class MusicAnalyzer
-{
-    constructor()
-    {
-        this.#sampleBuffers =
-        {
-            "audible":[],
-            "bass":[],
-            "lowMid":[],
-            "mid":[],
-            "highMid":[],
-            "treble":[]
-        }
-        this.averageEnergy =
-        {
-            "audible":0,
-            "bass":0,
-            "lowMid":0,
-            "mid":0,
-            "highMid":0,
-            "treble":0
-        }
+class MusicAnalyzer {
+    constructor() {
+        this.#sampleBuffers = {
+            audible: [],
+            bass: [],
+            lowMid: [],
+            mid: [],
+            highMid: [],
+            treble: [],
+        };
+        this.averageEnergy = {
+            audible: 0,
+            bass: 0,
+            lowMid: 0,
+            mid: 0,
+            highMid: 0,
+            treble: 0,
+        };
         this.fft = new p5.FFT();
-        this.instantEnergy =
-        {
-            "audible":0,
-            "bass":0,
-            "lowMid":0,
-            "mid": 0,
-            "highMid": 0,
-            "treble": 0
-        }
-        this.#standardDeviation=
-        {
-            "audible":0,
-            "bass":0,
-            "lowMid":0,
-            "mid": 0,
-            "highMid": 0,
-            "treble": 0
-        }
+        this.instantEnergy = {
+            audible: 0,
+            bass: 0,
+            lowMid: 0,
+            mid: 0,
+            highMid: 0,
+            treble: 0,
+        };
+        this.#standardDeviation = {
+            audible: 0,
+            bass: 0,
+            lowMid: 0,
+            mid: 0,
+            highMid: 0,
+            treble: 0,
+        };
     }
-    instantEnergy ={};
-    averageEnergy={};
+    instantEnergy = {};
+    averageEnergy = {};
     spectrum = [];
-    waveForm =[];
+    waveForm = [];
     fft = null;
     gradient = -0.1;
     b = 1;
-    analyze()
-    {
+    analyze() {
         this.waveForm = this.fft.waveform();
         this.spectrum = this.fft.analyze();
 
-        this.#sampleBuffers["audible"].push(this.fft.getEnergy(100,20000));
+        this.#sampleBuffers["audible"].push(this.fft.getEnergy(100, 20000));
         this.#sampleBuffers["bass"].push(this.fft.getEnergy("bass"));
         this.#sampleBuffers["lowMid"].push(this.fft.getEnergy("lowMid"));
         this.#sampleBuffers["mid"].push(this.fft.getEnergy("mid"));
@@ -60,67 +53,57 @@ class MusicAnalyzer
         this.#sampleBuffers["treble"].push(this.fft.getEnergy("treble"));
 
         //For-In loop is applied to iterate in the averageEnergy properties[35]
-        for( let freqBand in this.averageEnergy)
-        {
-            if (this.#sampleBuffers[freqBand].length > this.#samples)
-            {
+        for (let freqBand in this.averageEnergy) {
+            if (this.#sampleBuffers[freqBand].length > this.#samples) {
                 let sampleBufferSum = 0;
-                for(let i = 0; i < this.#sampleBuffers[freqBand].length; i++ )
-                {
+                for (let i = 0; i < this.#sampleBuffers[freqBand].length; i++) {
                     sampleBufferSum += this.#sampleBuffers[freqBand][i];
                 }
-                this.averageEnergy[freqBand] = sampleBufferSum/this.#sampleBuffers[freqBand].length;
+                this.averageEnergy[freqBand] = sampleBufferSum / this.#sampleBuffers[freqBand].length;
                 //Standard Deviation formula is inspired by Wikipedia[34]
                 let squareVarianceSum = 0;
-                for (let i = 0; i < this.#sampleBuffers[freqBand].length; i++)
-                {
-                    squareVarianceSum += (this.#sampleBuffers[freqBand][i] - this.averageEnergy[freqBand])**2;
+                for (let i = 0; i < this.#sampleBuffers[freqBand].length; i++) {
+                    squareVarianceSum += (this.#sampleBuffers[freqBand][i] - this.averageEnergy[freqBand]) ** 2;
                 }
-                let variance = squareVarianceSum/this.#sampleBuffers[freqBand].length
+                let variance = squareVarianceSum / this.#sampleBuffers[freqBand].length;
                 this.#standardDeviation[freqBand] = Math.sqrt(variance);
 
-                this.instantEnergy[freqBand] = this.#sampleBuffers[freqBand][this.#samples]
-                this.#sampleBuffers[freqBand].splice(0,1);
-                
+                this.instantEnergy[freqBand] = this.#sampleBuffers[freqBand][this.#samples];
+                this.#sampleBuffers[freqBand].splice(0, 1);
             }
-        } 
-    }
-    
-    detectBeat(freqBand)
-    {
-        
-        let thresholdFactor = this.gradient * this.#standardDeviation[freqBand]	+ this.b;
-
-        if (((this.instantEnergy[freqBand] - this.averageEnergy[freqBand]) > this.#standardDeviation[freqBand]*thresholdFactor )&&
-                                                                                         this.#sampleBuffers["audible"].length>=this.#samples)
-        {
-            return true;  
         }
-        else
-        {
+    }
+
+    detectBeat(freqBand) {
+        let thresholdFactor = this.gradient * this.#standardDeviation[freqBand] + this.b;
+
+        if (
+            this.instantEnergy[freqBand] - this.averageEnergy[freqBand] >
+                this.#standardDeviation[freqBand] * thresholdFactor &&
+            this.#sampleBuffers["audible"].length >= this.#samples
+        ) {
+            return true;
+        } else {
             return false;
         }
     }
-    //the original spectrum has 1024 bins of frequency. This function returns a customized spectrum with specific number of bins. It is used for 
+    //the original spectrum has 1024 bins of frequency. This function returns a customized spectrum with specific number of bins. It is used for
     //the wobbly sphere which has limited amount of marbles, and each marble is dedicated to a bin in this spectrum
-    customizeSpectrum(binsNumber)
-    {
+    customizeSpectrum(binsNumber) {
         let tempSpectrum = [];
         //the range of frequency for each  bin (the spectrum covers the hearing frequency from 100hz to 20000hz)
-        let freqBandRange = (20000-100)/binsNumber
+        let freqBandRange = (20000 - 100) / binsNumber;
 
-        for (let freq= 100; freq < 20000; freq += freqBandRange)
-        {
-            let tempBandEnergy = soundApp.musicAnalyzer.fft.getEnergy((freq,freq+freqBandRange ))
+        for (let freq = 100; freq < 20000; freq += freqBandRange) {
+            let tempBandEnergy = soundApp.musicAnalyzer.fft.getEnergy((freq, freq + freqBandRange));
             tempSpectrum.push(tempBandEnergy);
         }
         return tempSpectrum;
     }
-    #standardDeviation={};
-    #sampleBuffers={}
+    #standardDeviation = {};
+    #sampleBuffers = {};
     #samples = 60;
     b = 1;
-  
 }
 /*
 +---------------------------------------------------------------------------------------+

@@ -1,172 +1,158 @@
-class WobblySphere extends Object3d
-{
-    constructor(centerPoint,objectColor,objectSize, isNormalMaterial, p)
-    {
-        super(centerPoint,objectColor,objectSize, isNormalMaterial,p);
+class WobblySphere extends Object3d {
+    constructor(centerPoint, objectColor, objectSize, isNormalMaterial, p) {
+        super(centerPoint, objectColor, objectSize, isNormalMaterial, p);
         WobblySphere.counter++;
         this.name = "Sphere" + WobblySphere.counter;
-        this.#marblesInitializer()
-        this.ID = crypto.randomUUID()
-        this.p.camera(0,1000,800,0,0,0,0,1,0);
+        this.#marblesInitializer();
+        this.ID = crypto.randomUUID();
+        this.p.camera(0, 1000, 800, 0, 0, 0, 0, 1, 0);
     }
     static counter = 0;
 
-    draw=function() 
-    {
+    draw = function () {
         this.p.noStroke();
-        //Generates a spectrum where the number of frequency bins equals to the number of marbles. TEach marble will be related to a specific frequency band.  
-        this.#customizedSpectrum =soundApp.musicAnalyzer.customizeSpectrum(this.#marblesList.length);
+        //Generates a spectrum where the number of frequency bins equals to the number of marbles. TEach marble will be related to a specific frequency band.
+        this.#customizedSpectrum = soundApp.musicAnalyzer.customizeSpectrum(this.#marblesList.length);
         //Rotates the sphere based on the amount of instant energy received from the music in the frequency band of 100hz to 20000hz.
-        this.#rotationEnergy = soundApp.musicAnalyzer.instantEnergy["audible"]*this.#rotationFactor;
+        this.#rotationEnergy = soundApp.musicAnalyzer.instantEnergy["audible"] * this.#rotationFactor;
         //updates the location od each mable based on the received signals (#customizedSpectrum and #rotationEnergy) from the music.
         this.#updateMarbles();
         //calls the draw function of each marble and draws them.
         this.#assembleMarbles();
-    }
+    };
 
-    //Overrides the switchIsSelected() method of the parent class (Object3d). This function toggles the isSelected property of the object 
+    //Overrides the switchIsSelected() method of the parent class (Object3d). This function toggles the isSelected property of the object
     //and isSelected property of all marbles
-    switchIsSelected()
-    {
+    switchIsSelected() {
         super.switchIsSelected();
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].switchIsSelected();
         }
     }
-    //Overrides the relocateZ() method of the parent class (Object3d). This function updates the z-coordinate of the object's centerpoint 
+    //Overrides the relocateZ() method of the parent class (Object3d). This function updates the z-coordinate of the object's centerpoint
     //and  z-coordinate of the object's centerpoint  of all marbles.
-    relocateZ(delta)
-    { 
+    relocateZ(delta) {
         super.relocateZ(delta);
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].relocateZ(delta);
         }
     }
-    //Overrides the relocateX() method of the parent class (Object3d). This function updates the x-coordinate of the object's centerpoint 
+    //Overrides the relocateX() method of the parent class (Object3d). This function updates the x-coordinate of the object's centerpoint
     //and  x-coordinate of the object's centerpoint  of all marbles.
-    relocateX(delta)
-    {
+    relocateX(delta) {
         super.relocateX(delta);
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].relocateX(delta);
         }
-
     }
-    //Overrides the relocateY() method of the parent class (Object3d). This function updates the y-coordinate of the object's centerpoint 
+    //Overrides the relocateY() method of the parent class (Object3d). This function updates the y-coordinate of the object's centerpoint
     //and  y-coordinate of the object's centerpoint  of all marbles.
-    relocateY(delta)
-    {
+    relocateY(delta) {
         super.relocateY(delta);
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].relocateY(delta);
         }
-
     }
     //Overrides the changeColor() method of the parent class (Object3d). This function updates the object's color
     //and the object's color of all marbles.
-    changeColor(newColor)
-    {
-        super.changeColor(newColor)
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+    changeColor(newColor) {
+        super.changeColor(newColor);
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].changeColor(newColor);
         }
     }
     //Overrides the changeScale() method of the parent class (Object3d). This function updates the object's scale
     //and the object's scale of all marbles.
-    changeScale(scale)
-    {
+    changeScale(scale) {
         super.changeScale(scale);
         this.#marblesInitializer();
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].switchIsSelected();
         }
-
     }
     //Overrides the changeIsNormalMaterial() method of the parent class (Object3d). This function updates the isNormalMAterial property of the object
     //and the isNormalMAterial property of all marbles.
-    changeIsNormalMaterial(status)
-    {
+    changeIsNormalMaterial(status) {
         super.changeIsNormalMaterial(status);
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].changeIsNormalMaterial(status);
         }
     }
-    #marbleSize= null;
+    #marbleSize = null;
     #resolution = 20;
     #marblesList = [];
     #spectrumFactor = 0.5;
     #rotationEnergy = 0;
-    #rotationFactor = 0.0002
+    #rotationFactor = 0.0002;
     #customizedSpectrum = [];
-    #marbleSizeFactor = 0.09
+    #marbleSizeFactor = 0.09;
     //create a list of marble instances
-    #marblesInitializer()
-    {
-        //it makes sure #marbleList is reseted 
+    #marblesInitializer() {
+        //it makes sure #marbleList is reseted
         this.#marblesList = [];
-        this.#marbleSize = this.#marbleSizeFactor*this.size*this.scale;
+        this.#marbleSize = this.#marbleSizeFactor * this.size * this.scale;
         //Identifies the center points of Marble instances on the circle on xy plan.
         //theta represents the circular angle of a circle on the XZ plane.This circle is divided into resolution/2 sections by planes parallel to the XY plane
-        for( let theta =-Math.PI/2+Math.PI/(this.#resolution/2); theta < Math.PI/2; theta += Math.PI/(this.#resolution/2) )  
-        {   
-            //Circles parallel to xy                                                                                                
-            let xyCircleRadious = (this.size*this.scale)/2 * Math.cos(theta);  
+        for (
+            let theta = -Math.PI / 2 + Math.PI / (this.#resolution / 2);
+            theta < Math.PI / 2;
+            theta += Math.PI / (this.#resolution / 2)
+        ) {
+            //Circles parallel to xy
+            let xyCircleRadious = ((this.size * this.scale) / 2) * Math.cos(theta);
             //Circles parallel to xy plan are devided into sections by the resolution.
-            let sectionAngle = (2*Math.PI) / this.#resolution;
-            for(let section= 0; section<this.#resolution; section++)
-            {
-                let z = this.centerPoint.z+(this.size*this.scale)/2 * Math.sin(theta);
-                let x = this.centerPoint.x+((this.size*this.scale)/2 * Math.cos(theta))*Math.cos(sectionAngle*section);
-                let y = this.centerPoint.y+((this.size*this.scale)/2 * Math.cos(theta))*Math.sin(sectionAngle*section);
-                let marbleCenterpoint = this.p.createVector( x,y,z);
+            let sectionAngle = (2 * Math.PI) / this.#resolution;
+            for (let section = 0; section < this.#resolution; section++) {
+                let z = this.centerPoint.z + ((this.size * this.scale) / 2) * Math.sin(theta);
+                let x =
+                    this.centerPoint.x +
+                    ((this.size * this.scale) / 2) * Math.cos(theta) * Math.cos(sectionAngle * section);
+                let y =
+                    this.centerPoint.y +
+                    ((this.size * this.scale) / 2) * Math.cos(theta) * Math.sin(sectionAngle * section);
+                let marbleCenterpoint = this.p.createVector(x, y, z);
 
-                this.#marblesList.push(new Marble(marbleCenterpoint, this.color, this.#marbleSize, this.isNormalMaterial, this.p));
+                this.#marblesList.push(
+                    new Marble(marbleCenterpoint, this.color, this.#marbleSize, this.isNormalMaterial, this.p),
+                );
             }
         }
     }
-    #assembleMarbles()
-    {
-        for(let i = 0; i < this.#marblesList.length; i++)
-        {
-            
+    #assembleMarbles() {
+        for (let i = 0; i < this.#marblesList.length; i++) {
             this.#marblesList[i].draw();
-          
-        }
-    }
- 
-    //updates the actual location of marbles based on the #customizedSpectrum and #rotationEnergy
-    //Each marble is assigned to one bin in the #customizedSpectrum
-    #updateMarbles()
-    {
-        let bandIndex = 0;
-        
-        for (let i = 0; i < this.#marblesList.length; i++)
-        {
-            //relative vector on the xy plane from the center of shpere to the center of marble
-            let xyVector = this.p.createVector((this.#marblesList[i].centerPoint.x-this.centerPoint.x),(this.#marblesList[i].centerPoint.y-this.centerPoint.y))
-            //rotates the vectore based on the instant energy received from the music multiplied by the #rotationFactor.
-            xyVector.rotate(this.#rotationEnergy);
-            //updates the centerPoints of the marble.
-            this.#marblesList[i].centerPoint.x = xyVector.x+this.centerPoint.x;
-            this.#marblesList[i].centerPoint.y = xyVector.y+this.centerPoint.y;
-            //wobblwPoint is the actual location of marble which is relocated bu music effect. centerPoint is the original location of the 
-            //marble on the sphere and marble will return to this location when it does not receive signal from the music.
-            this.#marblesList[i].wobbledPoint = this.p.createVector(this.#marblesList[i].centerPoint.x, this.#marblesList[i].centerPoint.y,
-                                                          this.#marblesList[i].centerPoint.z)
-            let normalizeVector = p5.Vector.normalize(this.#marblesList[i].centerPoint)
-            let speedVector = normalizeVector.mult((1+this.#customizedSpectrum[bandIndex]*this.#spectrumFactor))
-            this.#marblesList[i].wobbledPoint.add(speedVector)
-            bandIndex++
         }
     }
 
+    //updates the actual location of marbles based on the #customizedSpectrum and #rotationEnergy
+    //Each marble is assigned to one bin in the #customizedSpectrum
+    #updateMarbles() {
+        let bandIndex = 0;
+
+        for (let i = 0; i < this.#marblesList.length; i++) {
+            //relative vector on the xy plane from the center of shpere to the center of marble
+            let xyVector = this.p.createVector(
+                this.#marblesList[i].centerPoint.x - this.centerPoint.x,
+                this.#marblesList[i].centerPoint.y - this.centerPoint.y,
+            );
+            //rotates the vectore based on the instant energy received from the music multiplied by the #rotationFactor.
+            xyVector.rotate(this.#rotationEnergy);
+            //updates the centerPoints of the marble.
+            this.#marblesList[i].centerPoint.x = xyVector.x + this.centerPoint.x;
+            this.#marblesList[i].centerPoint.y = xyVector.y + this.centerPoint.y;
+            //wobblwPoint is the actual location of marble which is relocated bu music effect. centerPoint is the original location of the
+            //marble on the sphere and marble will return to this location when it does not receive signal from the music.
+            this.#marblesList[i].wobbledPoint = this.p.createVector(
+                this.#marblesList[i].centerPoint.x,
+                this.#marblesList[i].centerPoint.y,
+                this.#marblesList[i].centerPoint.z,
+            );
+            let normalizeVector = p5.Vector.normalize(this.#marblesList[i].centerPoint);
+            let speedVector = normalizeVector.mult(1 + this.#customizedSpectrum[bandIndex] * this.#spectrumFactor);
+            this.#marblesList[i].wobbledPoint.add(speedVector);
+            bandIndex++;
+        }
+    }
 }
 
 /*
@@ -228,9 +214,3 @@ spectrumFactor: It is used in the updateMarbles() to adjust how much the marbles
 #assembleMarbles(): It calls the draw() function of each Marble instances and draw them, so the WobblySphere shapes.
 updateMarbles(): It updates the position of each marble corresponding to the received signal from the #customizedSpectrum.
 */
-
-
-
-
-    
-    

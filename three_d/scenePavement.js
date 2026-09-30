@@ -1,146 +1,134 @@
-class ScenePavement extends Object3d
-{              
-    constructor(centerPoint,objectColor,isNormalMAterial,p,pavementWidth,pavementHeight,pavementThickness,griding)
-    {
-        super(centerPoint,objectColor,null, isNormalMAterial,p);
-        ScenePavement.counter++
+class ScenePavement extends Object3d {
+    constructor(
+        centerPoint,
+        objectColor,
+        isNormalMAterial,
+        p,
+        pavementWidth,
+        pavementHeight,
+        pavementThickness,
+        griding,
+    ) {
+        super(centerPoint, objectColor, null, isNormalMAterial, p);
+        ScenePavement.counter++;
         this.#width = pavementWidth;
-        this.#height =pavementHeight;
+        this.#height = pavementHeight;
         this.#griding = griding;
         this.#thickness = pavementThickness;
         this.#tiling();
-        this.name = "Pavement"+ScenePavement.counter
+        this.name = "Pavement" + ScenePavement.counter;
     }
     static counter = 0;
-    switchIsSelected()
-    {
+    switchIsSelected() {
         this.isSelected = !this.isSelected;
-        for(let row = 0; row < this.#tilesList.length; row++ )
-        {
-           for(let column = 0; column < this.#tilesList[row].length; column++ )
-            { 
+        for (let row = 0; row < this.#tilesList.length; row++) {
+            for (let column = 0; column < this.#tilesList[row].length; column++) {
                 this.#tilesList[row][column].switchIsSelected();
             }
         }
     }
-    draw()
-    {
-        for(let row = 0; row < this.#tilesList.length; row++ )
-        {
-           for(let column = 0; column < this.#tilesList[row].length; column++ )
-            { 
+    draw() {
+        for (let row = 0; row < this.#tilesList.length; row++) {
+            for (let column = 0; column < this.#tilesList[row].length; column++) {
                 this.#tilesList[row][column].draw();
             }
         }
-       
     }
-    relocateZ(delta)
-    {
+    relocateZ(delta) {
         super.relocateZ(delta);
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
-                 this.#tilesList[row][column].relocateZ(delta);
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
+                this.#tilesList[row][column].relocateZ(delta);
             }
         }
     }
-    relocateX(delta)
-    {
+    relocateX(delta) {
         super.relocateX(delta);
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
-                 this.#tilesList[row][column].relocateX(delta);
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
+                this.#tilesList[row][column].relocateX(delta);
             }
         }
     }
-    relocateY(delta)
-    {
+    relocateY(delta) {
         super.relocateY(delta);
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
-                 this.#tilesList[row][column].relocateY(delta);
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
+                this.#tilesList[row][column].relocateY(delta);
             }
         }
     }
-    changeColor(newColor)
-    {
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
+    changeColor(newColor) {
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
                 this.#tilesList[row][column].changeColor(newColor);
             }
         }
     }
-    changeScale(scale)
-    {
-        super.changeScale(scale)
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
+    changeScale(scale) {
+        super.changeScale(scale);
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
                 this.#tilesList[row][column].changeScale(scale);
             }
         }
-        this.#tiling()
+        this.#tiling();
 
         //because of #tiling(), the isSelected properties of tiles will be changed to false. Following Code turns them true again.
-        for(let row = 0; row < this.#tilesList.length; row++ )
-        {
-           for(let column = 0; column < this.#tilesList[row].length; column++ )
-            { 
+        for (let row = 0; row < this.#tilesList.length; row++) {
+            for (let column = 0; column < this.#tilesList[row].length; column++) {
                 this.#tilesList[row][column].switchIsSelected();
             }
         }
-
     }
 
-    changeIsNormalMaterial(status)
-    {
+    changeIsNormalMaterial(status) {
         super.changeIsNormalMaterial(status);
-        for(let row = 0; row < this.#griding; row++)
-        {
-            for(let column = 0; column < this.#griding; column++)
-            {
+        for (let row = 0; row < this.#griding; row++) {
+            for (let column = 0; column < this.#griding; column++) {
                 this.#tilesList[row][column].changeIsNormalMaterial(status);
             }
         }
     }
     #width = null;
-    #height=null;
-    #thickness= null
+    #height = null;
+    #thickness = null;
     #griding = null;
-    #tilesList=[];
-    #tiling()
-    {
-        this.#tilesList=[];
-        let tileWidth = (this.#width*this.scale)/this.#griding;
-        let tileHeight = (this.#height*this.scale)/this.#griding;
-        let numberOfTiles = this.#griding**2;
+    #tilesList = [];
+    #tiling() {
+        this.#tilesList = [];
+        let tileWidth = (this.#width * this.scale) / this.#griding;
+        let tileHeight = (this.#height * this.scale) / this.#griding;
+        let numberOfTiles = this.#griding ** 2;
         //Centerpoint of the first ceramic at the top left
-        let leftTopCenterPoint = this.p.createVector(this.centerPoint.x-(this.#width*this.scale)/2+tileWidth/2, this.centerPoint.y-(this.#height*this.scale)/2+tileHeight/2)
-        for(let row = 0; row < this.#griding; row++)
-        {
-            let tempRow =[]
-            for(let column = 0; column < this.#griding; column++)
-            {
-                let tempCenterPoint = this.p.createVector((leftTopCenterPoint.x+column*tileWidth),(leftTopCenterPoint.y+tileHeight*row),this.centerPoint.z);
+        let leftTopCenterPoint = this.p.createVector(
+            this.centerPoint.x - (this.#width * this.scale) / 2 + tileWidth / 2,
+            this.centerPoint.y - (this.#height * this.scale) / 2 + tileHeight / 2,
+        );
+        for (let row = 0; row < this.#griding; row++) {
+            let tempRow = [];
+            for (let column = 0; column < this.#griding; column++) {
+                let tempCenterPoint = this.p.createVector(
+                    leftTopCenterPoint.x + column * tileWidth,
+                    leftTopCenterPoint.y + tileHeight * row,
+                    this.centerPoint.z,
+                );
                 let tempIsnormalMAterial;
-                if((column+row)%2 ==0)
-                {
+                if ((column + row) % 2 == 0) {
                     tempIsnormalMAterial = this.isNormalMaterial;
-                }
-                else
-                {
+                } else {
                     tempIsnormalMAterial = false;
                 }
-                let tempTile = new Tile(tempCenterPoint,this.color,tempIsnormalMAterial,tileWidth,tileHeight,this.#thickness, this.p)
-                tempRow.push(tempTile)
+                let tempTile = new Tile(
+                    tempCenterPoint,
+                    this.color,
+                    tempIsnormalMAterial,
+                    tileWidth,
+                    tileHeight,
+                    this.#thickness,
+                    this.p,
+                );
+                tempRow.push(tempTile);
             }
             this.#tilesList.push(tempRow);
         }

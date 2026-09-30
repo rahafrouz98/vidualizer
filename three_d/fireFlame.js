@@ -1,86 +1,87 @@
-class FireFlame extends Object3d
-{ 
-    constructor(centerPoint,objectColor,objectSize, isNormalMaterial,p)
-    {
-         super(centerPoint,objectColor,objectSize, isNormalMaterial,p);
-         FireFlame.counter++;
-         this.fireColor = p.color(255,255,0);
-         this.fireParticleSize = this.size/12;
-         this.name = "Flame" + FireFlame.counter;
+class FireFlame extends Object3d {
+    constructor(centerPoint, objectColor, objectSize, isNormalMaterial, p) {
+        super(centerPoint, objectColor, objectSize, isNormalMaterial, p);
+        FireFlame.counter++;
+        this.fireColor = p.color(255, 255, 0);
+        this.fireParticleSize = this.size / 12;
+        this.name = "Flame" + FireFlame.counter;
     }
     static counter = 0;
-    draw()
-    {
+    draw() {
         this.p.push();
-        if (this.isNormalMaterial)
-        {
+        if (this.isNormalMaterial) {
             this.p.normalMaterial();
-        }
-        else
-        {
-            this.p.fill(this.color)
+        } else {
+            this.p.fill(this.color);
         }
 
-        if(this.isSelected)
-        {
+        if (this.isSelected) {
             this.p.stroke("red");
             this.p.strokeWeight(5);
-        }
-        else
-        {
+        } else {
             this.p.noStroke();
         }
 
-        this.p.translate(this.centerPoint.x, this.centerPoint.y, this.centerPoint.z+(this.size*this.scale)/2);
-        this.p.box((this.size*this.scale)/3,(this.size*this.scale)/3,(this.size*this.scale));
-        this.p.push()
-            this.p.rotateX(-Math.PI/2)
-            this.p.translate(0,-((this.size*this.scale)/2),0);
-            this.p.cone((this.size*this.scale)/2,(this.size*this.scale));
+        this.p.translate(this.centerPoint.x, this.centerPoint.y, this.centerPoint.z + (this.size * this.scale) / 2);
+        this.p.box((this.size * this.scale) / 3, (this.size * this.scale) / 3, this.size * this.scale);
+        this.p.push();
+        this.p.rotateX(-Math.PI / 2);
+        this.p.translate(0, -((this.size * this.scale) / 2), 0);
+        this.p.cone((this.size * this.scale) / 2, this.size * this.scale);
         this.p.pop();
         this.p.pop();
-        
-        for(let i = (this.#fireParticlesList.length-1); i >= 0; i--)
-        {
-            if (this.#fireParticlesList[i].isExpired)
-            {
-                this.#fireParticlesList.splice(i,1);
-            }
-            else
-            {
+
+        for (let i = this.#fireParticlesList.length - 1; i >= 0; i--) {
+            if (this.#fireParticlesList[i].isExpired) {
+                this.#fireParticlesList.splice(i, 1);
+            } else {
                 this.#fireParticlesList[i].draw();
             }
         }
-        if(soundApp.musicAnalyzer.detectBeat("audible"))
-        {
-            this.#emitter(soundApp.musicAnalyzer.instantEnergy["audible"])
+        if (soundApp.musicAnalyzer.detectBeat("audible")) {
+            this.#emitter(soundApp.musicAnalyzer.instantEnergy["audible"]);
         }
     }
-    changeScale(scale)
-    {
-        super.changeScale(scale)
-        this.#fireParticleSize*=scale;
+    changeScale(scale) {
+        super.changeScale(scale);
+        this.#fireParticleSize *= scale;
     }
     #fireColor = null;
-    #particlesPerBatchFactor = .03;
+    #particlesPerBatchFactor = 0.03;
     #fireParticleSize = null;
-    #fireParticlesList =[];
-    #fireParticleSpeedFactor = .5;
+    #fireParticlesList = [];
+    #fireParticleSpeedFactor = 0.5;
     #orificeSizeFactor = 0.07;
-    #emitter(energy)
-    {
-        let particlesPerBatch = (energy*this.#particlesPerBatchFactor);
-        for(let i = 0; i < particlesPerBatch; i++)
-        {
-            let randomVector = this.p.createVector((this.p.random(-(this.size*this.scale)*this.#orificeSizeFactor ,(this.size*this.scale)*this.#orificeSizeFactor )),
-                                                     (this.p.random(-(this.size*this.scale)*this.#orificeSizeFactor ,(this.size*this.scale)*this.#orificeSizeFactor )),
-                                                       (this.p.random(0,(this.size*this.scale))));
-            let tempCenterPoint = this.p.createVector((this.centerPoint.x + randomVector.x), (this.centerPoint.y + randomVector.y),
-                                                (this.centerPoint.z+(this.size*this.scale) + randomVector.z))
-            this.#fireParticlesList.push(new FireFlameParticle(tempCenterPoint,this.fireColor,this.fireParticleSize,energy*this.#fireParticleSpeedFactor, this.p))
+    #emitter(energy) {
+        let particlesPerBatch = energy * this.#particlesPerBatchFactor;
+        for (let i = 0; i < particlesPerBatch; i++) {
+            let randomVector = this.p.createVector(
+                this.p.random(
+                    -(this.size * this.scale) * this.#orificeSizeFactor,
+                    this.size * this.scale * this.#orificeSizeFactor,
+                ),
+                this.p.random(
+                    -(this.size * this.scale) * this.#orificeSizeFactor,
+                    this.size * this.scale * this.#orificeSizeFactor,
+                ),
+                this.p.random(0, this.size * this.scale),
+            );
+            let tempCenterPoint = this.p.createVector(
+                this.centerPoint.x + randomVector.x,
+                this.centerPoint.y + randomVector.y,
+                this.centerPoint.z + this.size * this.scale + randomVector.z,
+            );
+            this.#fireParticlesList.push(
+                new FireFlameParticle(
+                    tempCenterPoint,
+                    this.fireColor,
+                    this.fireParticleSize,
+                    energy * this.#fireParticleSpeedFactor,
+                    this.p,
+                ),
+            );
         }
     }
-
 }
 
 /*

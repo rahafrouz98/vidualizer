@@ -1,39 +1,31 @@
 //@ param p: is a p5 instance used for 2d visualization
 //I used this p as a argument so I can use 2d functions in p5 library
-function Firework(fire_colour, x_pos, y_pos,numberOfParticles,speed, p )
-{
-    
+function Firework(fire_colour, x_pos, y_pos, numberOfParticles, speed, p) {
     let colour = fire_colour;
     let x = x_pos;
     let y = y_pos;
     //variable to detect the life of the firework and remove it after 1 second
-//start
+    //start
     let birthTime = p.millis();
-//end
-    let particles = []
-    
+    //end
+    let particles = [];
 
-    for(let i = 0; i < (Math.PI * 2); i+=(Math.PI * 2) / numberOfParticles )
-    {
-        particles.push(new FireworkParticle(x,y,colour, i,speed,p))
+    for (let i = 0; i < Math.PI * 2; i += (Math.PI * 2) / numberOfParticles) {
+        particles.push(new FireworkParticle(x, y, colour, i, speed, p));
     }
-    
+
     this.depleted = false;
 
-    this.draw = function()
-    {
-        for(let i = 0; i < particles.length; i++)
-        {
+    this.draw = function () {
+        for (let i = 0; i < particles.length; i++) {
             particles[i].draw();
         }
-//start
-        if((p.millis() - birthTime) >1000)
-        {
+        //start
+        if (p.millis() - birthTime > 1000) {
             this.depleted = true;
         }
-//end
-    }
-
+        //end
+    };
 }
 
 /*

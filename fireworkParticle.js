@@ -1,23 +1,19 @@
 //@ param p: is a p5 instance used for 2d visualization
 //I used this p as a argument so I can use 2d functions in p5 library
-function FireworkParticle(x_pos, y_pos, fire_colour, particle_angle, speed, p)
-{
+function FireworkParticle(x_pos, y_pos, fire_colour, particle_angle, speed, p) {
     let x = x_pos;
     let y = y_pos;
     let colour = fire_colour;
     let angle = particle_angle;
 
     let particleSpeed = speed;
- 
 
-    this.draw = function()
-    {
+    this.draw = function () {
         update();
         p.fill(colour);
-        p.ellipse(x,y,10,10);
-    }
-    function update()
-    {
+        p.ellipse(x, y, 10, 10);
+    };
+    function update() {
         //update x and y
         x += p.cos(angle) * particleSpeed;
         y += p.sin(angle) * particleSpeed;

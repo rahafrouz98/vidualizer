@@ -1,36 +1,30 @@
 //@ param p: is a p5 instance used for 2d visualization
 //I used this p as a argument so I can use 2d functions in p5 library
-function Fireworks(p)
-{
+function Fireworks(p) {
     //indicate if it needs 2d or 3d canva(rendering mode is P2D or WEBGL)
-	this.renderingMode = "p2d";
+    this.renderingMode = "p2d";
     this.name = "Fireworks";
     let fireworks = [];
-    let numberOfPArticlesFactor = .3
-    let speedFactor = .06
-    this.draw = function()
-    { 
-        if ( soundApp.musicAnalyzer.detectBeat("treble"))
-        {
-            let f_colour = p.color(p.random(0,255), p.random(0,255), p.random(0,255));
-            let f_x = p.random(p.width*0.2, p.width * 0.8 );
-            let f_y = p.random(p.height*0.2, p.height * 0.8 );
+    let numberOfPArticlesFactor = 0.3;
+    let speedFactor = 0.06;
+    this.draw = function () {
+        if (soundApp.musicAnalyzer.detectBeat("treble")) {
+            let f_colour = p.color(p.random(0, 255), p.random(0, 255), p.random(0, 255));
+            let f_x = p.random(p.width * 0.2, p.width * 0.8);
+            let f_y = p.random(p.height * 0.2, p.height * 0.8);
             //number of particles is computed based on the instantEnergy of "treble" frequency band multiplied by the numberOfPArticlesFactor
-            let numberOfParticles = (soundApp.musicAnalyzer.instantEnergy["treble"]*numberOfPArticlesFactor);
-            //speed o particle is computed based on the instantEnergy of "treble" frequency band multiplied by the speedFactor 
-            let speed = (soundApp.musicAnalyzer.instantEnergy["treble"]*speedFactor);
-            fireworks.push(new Firework( f_colour, f_x, f_y, numberOfParticles, speed,p ));
+            let numberOfParticles = soundApp.musicAnalyzer.instantEnergy["treble"] * numberOfPArticlesFactor;
+            //speed o particle is computed based on the instantEnergy of "treble" frequency band multiplied by the speedFactor
+            let speed = soundApp.musicAnalyzer.instantEnergy["treble"] * speedFactor;
+            fireworks.push(new Firework(f_colour, f_x, f_y, numberOfParticles, speed, p));
         }
         update();
-    }
-    function update()
-    {
-        for (let i = 0; i < fireworks.length; i++)
-        {
+    };
+    function update() {
+        for (let i = 0; i < fireworks.length; i++) {
             fireworks[i].draw();
-            if (fireworks[i].depleted)
-            {
-                fireworks.splice(i,1);
+            if (fireworks[i].depleted) {
+                fireworks.splice(i, 1);
             }
         }
     }

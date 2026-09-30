@@ -1,10 +1,8 @@
-class SceneMenu
-{
-    constructor(p, host)
-    {
+class SceneMenu {
+    constructor(p, host) {
         this.#p = p;
         this.#host = host;
-        this.#menuContainer = this.#p.createDiv("Scene Menu")
+        this.#menuContainer = this.#p.createDiv("Scene Menu");
         this.#menuContainer.parent(document.body);
         this.#menuContainer.style(`position: absolute; right:0px; top:100px; z-index:3; width:350px; height:500px; 
                                   background-color:rgb(0, 0,0,0); text-align:center; font-size: 25px; 
@@ -15,162 +13,150 @@ class SceneMenu
         this.#selectorLabel.parent(this.#menuContainer);
         this.#selectorLabel.style(`position: absolute; left:10px; top:80px;font-weight: normal;font-size: 20px;margin:0;
                                    rgba(39, 24, 179,.9)`);
-        this.#objectSelector = this.#p.createSelect("objectSelector"+crypto.randomUUID());
+        this.#objectSelector = this.#p.createSelect("objectSelector" + crypto.randomUUID());
         this.#objectSelector.parent(this.#menuContainer);
         this.#objectSelector.style(`position: absolute; left:200px; top:80px;font-size: 15px; margin:0;`);
-        this.#objectSelector.option("None");  
+        this.#objectSelector.option("None");
 
         //event handler for the object selector
-         this.#objectSelector.changed(()=>
-                                {
-                                    //When "None" is selected from the list
-                                    if("None" ==  this.#objectSelector.value())
-                                    {
-                                        this.#host.isEditing = false; 
-                                        //If editingObject is referenceing to any object, run its switchIsSelected() to set the value of its isSelected 
-                                        //to false. If the editing object is null then it has not switchIsSelected(). 
-                                        this.#host.editingObject?.switchIsSelected();
-                                        this.#host.editingObject = null;
-                                        //Hide the #editingToolsContainer
-                                        this.#editingToolsContainer.style("display:none")
+        this.#objectSelector.changed(() => {
+            //When "None" is selected from the list
+            if ("None" == this.#objectSelector.value()) {
+                this.#host.isEditing = false;
+                //If editingObject is referenceing to any object, run its switchIsSelected() to set the value of its isSelected
+                //to false. If the editing object is null then it has not switchIsSelected().
+                this.#host.editingObject?.switchIsSelected();
+                this.#host.editingObject = null;
+                //Hide the #editingToolsContainer
+                this.#editingToolsContainer.style("display:none");
+            }
+            //when an object is selected fro mthe list
+            else {
+                for (let i = 0; i < this.#host.objects.length; i++) {
+                    //it finds the index of selected object based on the name of the object
+                    if (this.#host.objects[i].name == this.#objectSelector.value()) {
+                        //Using Ternary Operator is inspired by P. Babakhchani[20]
+                        //If there is already an object being referenced by editingObject, it executes its switchIsSelected()
+                        //to set its isSelected property to false before removing it from editingObject
+                        this.#host.editingObject ? this.#host.editingObject.switchIsSelected() : null;
+                        this.#host.editingObject = this.#host.objects[i];
+                        //resets the value of #updateScaleFactor based on the recently selected object's sclae property.
+                        this.#updateScaleFactor(this.#host.editingObject.scale);
+                        //updates the content of scaleIndicator based on the recently selected object.
+                        this.#scaleIndicator.html(this.#host.editingObject.scale);
+                        //updates the shiningCheckbox and gets it checked or unchecked based on the recently selected object's property
+                        //of isNormalMaterial
+                        this.#host.editingObject.isNormalMaterial
+                            ? this.#shiningCheckbox.checked(true)
+                            : this.#shiningCheckbox.checked(false);
+                        //Sets the value of isSelected property to true for the selected object and its components that have this property
+                        this.#host.editingObject.switchIsSelected();
+                        //It unhides the menu.
+                        this.#editingToolsContainer.style("display:block");
+                        this.#host.isEditing = true;
+                        break;
+                    }
+                }
+            }
+        });
+        this.#editingToolsContainer = this.#p.createDiv();
+        this.#editingToolsContainer.parent(this.#menuContainer);
+        this.#editingToolsContainer.style(
+            `position: absolute; top:150,left:0 z-index:3; color:rgba(39, 24, 179,.9); font-weight: normal;font-size: 20px;display:none;`,
+        );
 
-                                    }
-                                    //when an object is selected fro mthe list
-                                    else
-                                    {
-                                        for (let i = 0; i < this.#host.objects.length; i++)
-                                        {
-                                            //it finds the index of selected object based on the name of the object
-                                            if(this.#host.objects[i].name ==  this.#objectSelector.value())
-                                            {  
-                                                //Using Ternary Operator is inspired by P. Babakhchani[20]
-                                                //If there is already an object being referenced by editingObject, it executes its switchIsSelected()
-                                                //to set its isSelected property to false before removing it from editingObject
-                                                this.#host.editingObject ? this.#host.editingObject.switchIsSelected(): null;
-                                                this.#host.editingObject = this.#host.objects[i];
-                                                //resets the value of #updateScaleFactor based on the recently selected object's sclae property.
-                                                this.#updateScaleFactor(this.#host.editingObject.scale);
-                                                //updates the content of scaleIndicator based on the recently selected object.
-                                                this.#scaleIndicator.html(this.#host.editingObject.scale);
-                                                //updates the shiningCheckbox and gets it checked or unchecked based on the recently selected object's property
-                                                //of isNormalMaterial
-                                                this.#host.editingObject.isNormalMaterial ? this.#shiningCheckbox.checked(true) :
-                                                                                            this.#shiningCheckbox.checked(false); 
-                                                //Sets the value of isSelected property to true for the selected object and its components that have this property 
-                                                this.#host.editingObject.switchIsSelected();
-                                                //It unhides the menu.
-                                                this.#editingToolsContainer.style("display:block");
-                                                this.#host.isEditing = true;
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            )  
-        this.#editingToolsContainer = this.#p.createDiv()
-        this.#editingToolsContainer.parent(this.#menuContainer)
-        this.#editingToolsContainer.style(`position: absolute; top:150,left:0 z-index:3; color:rgba(39, 24, 179,.9); font-weight: normal;font-size: 20px;display:none;`);
-       
         this.#colorPickerLabel = this.#p.createDiv("Color:");
-        this.#colorPickerLabel.parent(this.#editingToolsContainer)
+        this.#colorPickerLabel.parent(this.#editingToolsContainer);
         this.#colorPickerLabel.style(`position: absolute; top:150px; left:15px`);
-       
+
         this.#colorPicker = this.#p.createColorPicker("blue");
         this.#colorPicker.parent(this.#editingToolsContainer);
         this.#colorPicker.style(`position: absolute;top:150px; left:90px`);
-        this.#colorPicker.changed(()=>
-                                    {
-                                        this.#host.editingObject.changeColor(this.#colorPicker.value());
-                                    }
-                                )
+        this.#colorPicker.changed(() => {
+            this.#host.editingObject.changeColor(this.#colorPicker.value());
+        });
 
         this.#shiningLabel = this.#p.createDiv("Shining:");
-        this.#shiningLabel.parent(this.#editingToolsContainer)
+        this.#shiningLabel.parent(this.#editingToolsContainer);
         this.#shiningLabel.style(`position: absolute; top:200px; left:15px`);
 
-        this.#shiningCheckbox = this.#p.createCheckbox( )
-        this.#shiningCheckbox.parent(this.#editingToolsContainer)
+        this.#shiningCheckbox = this.#p.createCheckbox();
+        this.#shiningCheckbox.parent(this.#editingToolsContainer);
         this.#shiningCheckbox.style(`position: absolute; top:200px; left:90px`);
-        this.#shiningCheckbox.changed(()=>
-                                            {
-                                                this.#shiningCheckbox.checked() ? this.#host.editingObject.changeIsNormalMaterial(true) : 
-                                                                                  this.#host.editingObject.changeIsNormalMaterial(false) ;
-                                            }
-                                    );
-
+        this.#shiningCheckbox.changed(() => {
+            this.#shiningCheckbox.checked()
+                ? this.#host.editingObject.changeIsNormalMaterial(true)
+                : this.#host.editingObject.changeIsNormalMaterial(false);
+        });
 
         this.#scaleEditorLabel = this.#p.createDiv("Scale:");
-        this.#scaleEditorLabel.parent(this.#editingToolsContainer)
+        this.#scaleEditorLabel.parent(this.#editingToolsContainer);
         this.#scaleEditorLabel.style(`position: absolute; top:245px; left:15px`);
 
         this.#scaleIndicator = this.#p.createDiv("1");
-        this.#scaleIndicator.parent(this.#editingToolsContainer)
-        this.#scaleIndicator.style(`position: absolute; top:250px; left:110px; width:50px; height:25;background-color:rgb(255, 255, 255,.9);font-size: 15px `);
+        this.#scaleIndicator.parent(this.#editingToolsContainer);
+        this.#scaleIndicator.style(
+            `position: absolute; top:250px; left:110px; width:50px; height:25;background-color:rgb(255, 255, 255,.9);font-size: 15px `,
+        );
 
-        this.#positiveButton = this.#p.createButton("+")
-        this.#positiveButton.parent(this.#editingToolsContainer)
-        this.#positiveButton.style(`position: absolute; top:240px; left:80px; text-align:center;font-weight: bold;background-color:rgb(61, 13, 88,.9);
+        this.#positiveButton = this.#p.createButton("+");
+        this.#positiveButton.parent(this.#editingToolsContainer);
+        this.#positiveButton
+            .style(`position: absolute; top:240px; left:80px; text-align:center;font-weight: bold;background-color:rgb(61, 13, 88,.9);
                                     color:rgb(255,255,255,.9); padding:0px; border: 0px `);
-        this.#positiveButton.size(20,15);
-        this.#positiveButton.mousePressed(()=>
-                                    {
-                                        //increases the #scaleFactor by +0.2 and returns a mapped scale
-                                        let scale = this.#scaleFactorTOScaleMapper(0.2);
-                                        this.#scaleIndicator.html(scale);
-                                        this.#host.editingObject?.changeScale(scale);
-                                    }
-                                )
+        this.#positiveButton.size(20, 15);
+        this.#positiveButton.mousePressed(() => {
+            //increases the #scaleFactor by +0.2 and returns a mapped scale
+            let scale = this.#scaleFactorTOScaleMapper(0.2);
+            this.#scaleIndicator.html(scale);
+            this.#host.editingObject?.changeScale(scale);
+        });
 
-        this.#negativeButton = this.#p.createButton("-")
-        this.#negativeButton.parent(this.#editingToolsContainer)
-        this.#negativeButton.style(`position: absolute; top:260px; left:80px; text-align:center;font-weight: bold;background-color:rgb(61, 13, 88,.9);
+        this.#negativeButton = this.#p.createButton("-");
+        this.#negativeButton.parent(this.#editingToolsContainer);
+        this.#negativeButton
+            .style(`position: absolute; top:260px; left:80px; text-align:center;font-weight: bold;background-color:rgb(61, 13, 88,.9);
                                     color:rgb(255,255,255,.9); padding:0px; border: 0px `);
-        this.#negativeButton.size(20,15);
-        this.#negativeButton.mousePressed(()=>
-                                    {
-                                        //decreases the #scaleFactor by -0.2 and returns a mapped scale
-                                        let scale = this.#scaleFactorTOScaleMapper(-0.2);
-                                        this.#scaleIndicator.html(scale);
-                                        this.#host.editingObject?.changeScale(scale);
-                                    }
-                                )
+        this.#negativeButton.size(20, 15);
+        this.#negativeButton.mousePressed(() => {
+            //decreases the #scaleFactor by -0.2 and returns a mapped scale
+            let scale = this.#scaleFactorTOScaleMapper(-0.2);
+            this.#scaleIndicator.html(scale);
+            this.#host.editingObject?.changeScale(scale);
+        });
 
         this.#help = this.#p.createP("Tip: Use mouse wheel and drag to relocate the selected object");
         this.#help.parent(this.#editingToolsContainer);
-        this.#help.style(`position: absolute; top:300px; left:10px; width: 300px;text-align:left;font-weight: normal;background-color:rgb(61, 13, 88,.9);
+        this.#help
+            .style(`position: absolute; top:300px; left:10px; width: 300px;text-align:left;font-weight: normal;background-color:rgb(61, 13, 88,.9);
                                     color:rgb(255,255,255,.9); padding:0px; border: 0px;font-size: 15px `);
 
-        this.showAndHideMenu()
+        this.showAndHideMenu();
     }
     isMenuActive = false;
-   
-    showAndHideMenu()
-    {
-        if(((this.#p.mouseX>this.#p.width-350)&&(this.#p.mouseX<(this.#p.width-15))&&this.isMenuActive)|| (this.#isMenuForcedToDisplay && this.isMenuActive))
-        {
-            this.#menuContainer.style("display:block;")
-        }
-        else 
-        {
-            this.#menuContainer.style("display:none;")
+
+    showAndHideMenu() {
+        if (
+            (this.#p.mouseX > this.#p.width - 350 && this.#p.mouseX < this.#p.width - 15 && this.isMenuActive) ||
+            (this.#isMenuForcedToDisplay && this.isMenuActive)
+        ) {
+            this.#menuContainer.style("display:block;");
+        } else {
+            this.#menuContainer.style("display:none;");
         }
     }
-   
-    keyPressed(keycode)
-    {
-        if(keycode == 32)
-        {
-            this.#isMenuForcedToDisplay =  !this.#isMenuForcedToDisplay;
+
+    keyPressed(keycode) {
+        if (keycode == 32) {
+            this.#isMenuForcedToDisplay = !this.#isMenuForcedToDisplay;
             this.showAndHideMenu();
         }
     }
-    mouseMoved()
-    {
+    mouseMoved() {
         this.showAndHideMenu();
     }
 
-    addObjectEditingTools(object)
-    {
+    addObjectEditingTools(object) {
         this.#objectSelector.option(object.name);
     }
     #host = null;
@@ -182,8 +168,8 @@ class SceneMenu
     #editingToolsContainer = null;
     #colorPicker = null;
     #scaleEditorLabel = null;
-    #positiveButton= null;
-    #negativeButton=null;
+    #positiveButton = null;
+    #negativeButton = null;
     #scaleFactor = 1;
     #scaleIndicator = null;
     #shiningLabel = null;
@@ -192,19 +178,17 @@ class SceneMenu
     #help = null;
 
     //it incease or decrease the scale factor based on the argument it receives and return a mapped scale from 0 to infinity
-    #scaleFactorTOScaleMapper(increment)
-    {
+    #scaleFactorTOScaleMapper(increment) {
         //It stops scaleFactor from becoming negative to prevent the scale increasing again in the quadratic function
-        (this.#scaleFactor+increment > 0) ? this.#scaleFactor+=increment : 0
+        this.#scaleFactor + increment > 0 ? (this.#scaleFactor += increment) : 0;
         //Quadratic function is used to map the sclae so it increases faster when scaleFactor gets bigger
-        let scale = this.#scaleFactor**2;
+        let scale = this.#scaleFactor ** 2;
         //It rounds down the scale to one decimal point.
-        scale = Math.floor(scale*10) /10;
+        scale = Math.floor(scale * 10) / 10;
         return scale;
     }
 
-    #updateScaleFactor(scale)
-    {
+    #updateScaleFactor(scale) {
         this.#scaleFactor = Math.sqrt(scale);
     }
 }

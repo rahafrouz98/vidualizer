@@ -1,49 +1,40 @@
-class Object3d
-{
-  constructor(centerPoint,objectColor,objectSize, isNormalMaterial, p)
-  {
-    this.centerPoint = centerPoint;
-    this.color = objectColor;
-    this.isNormalMaterial = isNormalMaterial;
-    this.size=objectSize;
-    this.p = p;
-  }
-  switchIsSelected()
-  {
-      this.isSelected = !this.isSelected;
-  }
-  relocateZ(delta)
-  {
-    this.centerPoint.z+=delta;  
-  }
-  relocateX(delta)
-  {
-      this.centerPoint.x+=delta; 
-  }
-  relocateY(delta)
-  {
-      this.centerPoint.y+=delta; 
-  }
-  changeColor(newColor)
-  {
-    this.color = newColor;
-  }
-  changeScale(scale)
-  {
-    this.scale = scale;
-  }
-  changeIsNormalMaterial(status)
-  {
-    this.isNormalMaterial = status;
-  }
-  color = null;
-  centerPoint = null;
-  size = null;
-  isNormalMaterial=null;
-  isSelected = false;
-  name = null;
-  p = null;
-  scale = 1;
+class Object3d {
+    constructor(centerPoint, objectColor, objectSize, isNormalMaterial, p) {
+        this.centerPoint = centerPoint;
+        this.color = objectColor;
+        this.isNormalMaterial = isNormalMaterial;
+        this.size = objectSize;
+        this.p = p;
+    }
+    switchIsSelected() {
+        this.isSelected = !this.isSelected;
+    }
+    relocateZ(delta) {
+        this.centerPoint.z += delta;
+    }
+    relocateX(delta) {
+        this.centerPoint.x += delta;
+    }
+    relocateY(delta) {
+        this.centerPoint.y += delta;
+    }
+    changeColor(newColor) {
+        this.color = newColor;
+    }
+    changeScale(scale) {
+        this.scale = scale;
+    }
+    changeIsNormalMaterial(status) {
+        this.isNormalMaterial = status;
+    }
+    color = null;
+    centerPoint = null;
+    size = null;
+    isNormalMaterial = null;
+    isSelected = false;
+    name = null;
+    p = null;
+    scale = 1;
 }
 /*
 +---------------------------------------------------------------------------------+

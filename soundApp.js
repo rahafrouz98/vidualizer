@@ -1,17 +1,15 @@
-class SoundApp
-{
-    constructor()
-    {
-        this.musicAnalyzer= new MusicAnalyzer();
+class SoundApp {
+    constructor() {
+        this.musicAnalyzer = new MusicAnalyzer();
     }
-    musicAnalyzer=null;
-    vis=null;
-    sound=null;
-    canvasP2D=null;
-    canvasWEBGL=null;
-    fs=false;
-    p2dInstance=null
-    webglInstance=null;
+    musicAnalyzer = null;
+    vis = null;
+    sound = null;
+    canvasP2D = null;
+    canvasWEBGL = null;
+    fs = false;
+    p2dInstance = null;
+    webglInstance = null;
 }
 soundApp = new SoundApp();
 
@@ -41,7 +39,7 @@ Creative Commons license[7].
 vis: It is a visualization object. p2dInstance and webglInstance use this variable to add their visualizers to the app and manage them.
 sound: It is a P5.SoundFile, which refers to the loaded sound, and P5.FFT object analyzes its signals.
 musicAnalyzer: It is a musicAnalyzer instance which calculates average and standard deviation of music's energy,the instant energy of 
-               different frequency bands, and can ccustomize a spectrum with required number of bins.
+               different frequency bands, and can customize a spectrum with required number of bins.
 canvasP2D: This variable refers to the canvas created in the p2dInstance, and is used for 2d visualizations.
 canvasWEBGL: This variable refers to the canvas created in the webglInstance, and is used for 3d visualizations.
 fs: It is a Boolean variable that indicates if the window is in full-screen mode or not. 

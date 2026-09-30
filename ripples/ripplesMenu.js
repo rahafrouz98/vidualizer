@@ -1,18 +1,17 @@
-class RipplesMenu
-{
-    constructor(p)
-    {
-        this.#p = p
-        this.menuContainer = this.#p.createDiv("ripple Menu")
+class RipplesMenu {
+    constructor(p) {
+        this.#p = p;
+        this.menuContainer = this.#p.createDiv("ripple Menu");
         this.menuContainer.parent(document.body);
-        this.menuContainer.style(`position: absolute; right:0px; top:100px; z-index:3; width:300px; height:400px; ; text-align:center; font-size: 25px; 
+        this.menuContainer
+            .style(`position: absolute; right:0px; top:100px; z-index:3; width:300px; height:400px; ; text-align:center; font-size: 25px; 
                                   font-weight: bold; color:rgba(39, 24, 179,.9);border-radius: 20px;background-color:rgb(0, 0,0,0.4)`);
 
         this.#layoutLabel = this.#p.createP("Select Layout: ");
         this.#layoutLabel.parent(this.menuContainer);
         this.#layoutLabel.style(`position: absolute; left:10px; top:20px;font-weight: normal; font-size: 20px;`);
-        
-        this.layoutRadio = this.#p.createRadio("layoutRadio"+crypto.randomUUID());
+
+        this.layoutRadio = this.#p.createRadio("layoutRadio" + crypto.randomUUID());
         this.layoutRadio.parent(this.menuContainer);
         this.layoutRadio.size(200);
         this.layoutRadio.option("1");
@@ -20,7 +19,9 @@ class RipplesMenu
         this.layoutRadio.option("3");
         this.layoutRadio.option("4");
         this.layoutRadio.selected("1");
-        this.layoutRadio.style(`position: absolute; left:100px; top:40px;color:white; font-weight: normal;font-size: 20px;`);
+        this.layoutRadio.style(
+            `position: absolute; left:100px; top:40px;color:white; font-weight: normal;font-size: 20px;`,
+        );
 
         this.#selectorLabel = this.#p.createP("Select a ripple to edit: ");
         this.#selectorLabel.parent(this.menuContainer);
@@ -29,7 +30,7 @@ class RipplesMenu
 
         // crypto.randomUUID() is used to give a unique name to each group of radio buttons. Otherwise, if thewy happen to have the same name, it can
         // cause confusion between differrent groups[26].
-        this.rippleSelector = this.#p.createSelect("rippleSelector"+crypto.randomUUID());
+        this.rippleSelector = this.#p.createSelect("rippleSelector" + crypto.randomUUID());
         this.rippleSelector.parent(this.menuContainer);
         this.rippleSelector.option("1");
         this.rippleSelector.option("2");
@@ -37,32 +38,38 @@ class RipplesMenu
         this.rippleSelector.option("4");
         this.rippleSelector.selected("1");
         this.rippleSelector.style(`position: absolute; left:210px; top:78px;font-size: 20px; margin:0;`);
-        this.rippleSelector.id("rippleSelector")
+        this.rippleSelector.id("rippleSelector");
         this.rippleSelectorUpdate("1"); //disables all options except option 1
 
         this.#editorSection = this.#p.createDiv();
-        this.#editorSection.parent(this.menuContainer );
+        this.#editorSection.parent(this.menuContainer);
         this.#editorSection.style(`position:absolute; top:105px; left:10px; right:10px; bottom:10px; border-width:3px);
-                             border-style:solid;text-align:left;font-weight: normal;font-size: 20px;border-radius: 20px;`)
-            
+                             border-style:solid;text-align:left;font-weight: normal;font-size: 20px;border-radius: 20px;`);
+
         this.#sensitivityLabel = this.#p.createP("ripple Sensitivity: ");
         this.#sensitivityLabel.parent(this.#editorSection);
-        this.#sensitivityLabel.style(`position: absolute; left:10px; top:20px; margin:0px;font-weight: normal;font-size: 20px;`);
-        
-        this.sensitivityBar = this.#p.createSlider(0,1,.3,.01);
+        this.#sensitivityLabel.style(
+            `position: absolute; left:10px; top:20px; margin:0px;font-weight: normal;font-size: 20px;`,
+        );
+
+        this.sensitivityBar = this.#p.createSlider(0, 1, 0.3, 0.01);
         this.sensitivityBar.parent(this.#editorSection);
         this.sensitivityBar.size(150);
-        this.sensitivityBar.style(`position: absolute; left:10px; top:45px;color:white;font-weight: normal;font-size: 20px;`);
+        this.sensitivityBar.style(
+            `position: absolute; left:10px; top:45px;color:white;font-weight: normal;font-size: 20px;`,
+        );
 
         this.sensitivityValue = this.#p.createP(this.sensitivityBar.value());
         this.sensitivityValue.parent(this.#editorSection);
-        this.sensitivityValue.style(`position: absolute; left:180px; top:45px; margin:0px; color:white;font-weight: normal;font-size: 20px;`);
+        this.sensitivityValue.style(
+            `position: absolute; left:180px; top:45px; margin:0px; color:white;font-weight: normal;font-size: 20px;`,
+        );
 
         this.#colorLabel = this.#p.createP("ripple Color: ");
         this.#colorLabel.parent(this.#editorSection);
         this.#colorLabel.style(`position:absolute;left:10px;top:95px;margin:0px;font-weight: normal;font-size: 20px;`);
 
-        this.colorRadio = this.#p.createRadio("rippleColor"+crypto.randomUUID());
+        this.colorRadio = this.#p.createRadio("rippleColor" + crypto.randomUUID());
         this.colorRadio.parent(this.#editorSection);
         this.colorRadio.size(200);
         this.colorRadio.option("Ocean");
@@ -70,13 +77,17 @@ class RipplesMenu
         this.colorRadio.option("Night");
         this.colorRadio.option("Green");
         this.colorRadio.selected("Ocean");
-        this.colorRadio.style(`position: absolute; left:10px; top:120px;text-align:left;color:white;font-weight: normal;font-size: 20px;`);
+        this.colorRadio.style(
+            `position: absolute; left:10px; top:120px;text-align:left;color:white;font-weight: normal;font-size: 20px;`,
+        );
 
         this.#freqLabel = this.#p.createP("ripple Frequency Band: ");
         this.#freqLabel.parent(this.#editorSection);
-        this.#freqLabel.style(`position: absolute; left:10px; top:190px;margin:0px;font-weight: normal;font-size: 20px;`);
-        
-        this.freqRadio = this.#p.createRadio("freqRadio"+crypto.randomUUID());
+        this.#freqLabel.style(
+            `position: absolute; left:10px; top:190px;margin:0px;font-weight: normal;font-size: 20px;`,
+        );
+
+        this.freqRadio = this.#p.createRadio("freqRadio" + crypto.randomUUID());
         this.freqRadio.parent(this.#editorSection);
         this.freqRadio.size(220);
         this.freqRadio.option("audible");
@@ -86,9 +97,11 @@ class RipplesMenu
         this.freqRadio.option("highMid");
         this.freqRadio.option("treble");
         this.freqRadio.selected("audible");
-        this.freqRadio.style(`position: absolute; left:10px; top:215px;text-align:left;color:white;font-weight: normal;font-size: 20px;`);
+        this.freqRadio.style(
+            `position: absolute; left:10px; top:215px;text-align:left;color:white;font-weight: normal;font-size: 20px;`,
+        );
 
-        this.showAndHideMenu()
+        this.showAndHideMenu();
     }
     layoutRadio = null;
     freqRadio = null;
@@ -98,64 +111,57 @@ class RipplesMenu
     sensitivityValue = null;
     menuContainer = null;
     isMenuActive = false;
-    showAndHideMenu()
-    {
-        if(((this.#p.mouseX>this.#p.width-300)&&(this.#p.mouseX<(this.#p.width-15))&&this.isMenuActive)|| (this.#isMenuForcedToDisplay && this.isMenuActive))
-        {
-
-            this.menuContainer.style("display:block;")
-        }
-        else 
-        {
-            this.menuContainer.style("display:none;")
+    showAndHideMenu() {
+        if (
+            (this.#p.mouseX > this.#p.width - 300 && this.#p.mouseX < this.#p.width - 15 && this.isMenuActive) ||
+            (this.#isMenuForcedToDisplay && this.isMenuActive)
+        ) {
+            this.menuContainer.style("display:block;");
+        } else {
+            this.menuContainer.style("display:none;");
         }
     }
-    rippleSelectorUpdate(layout)
-    {
-        switch(layout)
-        {
+    rippleSelectorUpdate(layout) {
+        switch (layout) {
             case "1":
-                this.rippleSelector.enable("1")
-                this.rippleSelector.disable("2")
-                this.rippleSelector.disable("3")
-                this.rippleSelector.disable("4")
+                this.rippleSelector.enable("1");
+                this.rippleSelector.disable("2");
+                this.rippleSelector.disable("3");
+                this.rippleSelector.disable("4");
                 break;
             case "2":
-                this.rippleSelector.enable("1")
-                this.rippleSelector.enable("2")
-                this.rippleSelector.disable("3")
-                this.rippleSelector.disable("4")
+                this.rippleSelector.enable("1");
+                this.rippleSelector.enable("2");
+                this.rippleSelector.disable("3");
+                this.rippleSelector.disable("4");
                 break;
             case "3":
-                this.rippleSelector.enable("1")
-                this.rippleSelector.enable("2")
-                this.rippleSelector.enable("3")
-                this.rippleSelector.disable("4")
+                this.rippleSelector.enable("1");
+                this.rippleSelector.enable("2");
+                this.rippleSelector.enable("3");
+                this.rippleSelector.disable("4");
                 break;
             case "4":
-                this.rippleSelector.enable("1")
-                this.rippleSelector.enable("2")
-                this.rippleSelector.enable("3")
-                this.rippleSelector.enable("4")
+                this.rippleSelector.enable("1");
+                this.rippleSelector.enable("2");
+                this.rippleSelector.enable("3");
+                this.rippleSelector.enable("4");
         }
     }
-    keyPressed(keycode)
-    {
-        if(keycode == 32)
-        {
-            this.#isMenuForcedToDisplay =  !this.#isMenuForcedToDisplay;
+    keyPressed(keycode) {
+        if (keycode == 32) {
+            this.#isMenuForcedToDisplay = !this.#isMenuForcedToDisplay;
             this.showAndHideMenu();
         }
     }
-    mouseMoved()
-    {
+    mouseMoved() {
         this.showAndHideMenu();
     }
-    
-    #p = null
+
+    #p = null;
     #layoutLabel = null;
     #selectorLabel = null;
-    #sensitivityLabel =null;
+    #sensitivityLabel = null;
     #colorLabel = null;
     #freqLabel = null;
     #editorSection = null;

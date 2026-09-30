@@ -1,67 +1,67 @@
-class PointsManager
-{
-        constructor(gridSize,sectionAngle,p)
-        {
-                this.#p = p;
-                this.#gridSize = gridSize;
-                this.#sectionAngle = sectionAngle;
-                //instead of p.width and p.height, I used screen.width and screen.height[30] to ensure that calculations are based on the entire screen in case the 
-                //windoe is not maximized. Otherwise, if the calculations are based on the smaller window and the window is later resized to full size, the resolution 
-                // of the generated images would be insufficient. 
-                this.#cellWidth =  screen.width/gridSize;
-                this.#cellHeight =  screen.height/gridSize; 
-                this.#diameter = Math.sqrt(this.#cellWidth**2+this.#cellHeight**2)/2
-                this.#pointsDistributer();
-                this.#phasing();
-                this.#pointsRotation(); 
+class PointsManager {
+    constructor(gridSize, sectionAngle, p) {
+        this.#p = p;
+        this.#gridSize = gridSize;
+        this.#sectionAngle = sectionAngle;
+        //instead of p.width and p.height, I used screen.width and screen.height[30] to ensure that calculations are based on the entire screen in case the
+        //windoe is not maximized. Otherwise, if the calculations are based on the smaller window and the window is later resized to full size, the resolution
+        // of the generated images would be insufficient.
+        this.#cellWidth = screen.width / gridSize;
+        this.#cellHeight = screen.height / gridSize;
+        this.#diameter = Math.sqrt(this.#cellWidth ** 2 + this.#cellHeight ** 2) / 2;
+        this.#pointsDistributer();
+        this.#phasing();
+        this.#pointsRotation();
+    }
+    BLP = [];
+    #p = null;
+    #gridSize = null;
+    #sectionAngle = null;
+    #rotationCenters = [];
+    #cellWidth = null;
+    #cellHeight = null;
+    #intPhaseList = [];
+    #diameter = null;
+
+    #pointsDistributer() {
+        for (let j = 0; j < this.#gridSize; j++) {
+            for (let i = 0; i < this.#gridSize; i++) {
+                this.#rotationCenters.push(
+                    new this.#p.createVector(
+                        (i * this.#cellWidth + i * this.#cellWidth + this.#cellWidth) / 2,
+                        (j * this.#cellHeight + j * this.#cellHeight + this.#cellHeight) / 2,
+                    ),
+                );
+            }
         }
-        BLP = [];
-        #p = null;
-        #gridSize = null;
-        #sectionAngle = null;
-        #rotationCenters = [];
-        #cellWidth =  null;
-        #cellHeight =  null;
-        #intPhaseList = [];
-        #diameter = null;
-  
-        #pointsDistributer()
-        {
-                for( let j = 0; j < this.#gridSize; j++)
-                {
-                        for( let i = 0; i< this.#gridSize; i++)
-                        {
-                                this.#rotationCenters.push(new this.#p.createVector((((i*this.#cellWidth)+(i*this.#cellWidth)+this.#cellWidth)/2),
-                                                                                (((j*this.#cellHeight)+(j*this.#cellHeight)+this.#cellHeight)/2)));
-                        }
-                }
+    }
+    #phasing() {
+        for (let i = 0; i < this.#rotationCenters.length; i++) {
+            this.#intPhaseList.push(this.#p.random(0, Math.PI * 2));
         }
-        #phasing()
-        {
-                for ( let i = 0; i < this.#rotationCenters.length; i++)
-                {
-                        this.#intPhaseList.push(this.#p.random(0, Math.PI * 2));
-                }
+    }
+    #pointsRotation() {
+        //it divides a complete circle into sections (buffers) with angles equal to sectionAngle
+        let buffers = 360 / this.#sectionAngle;
+        //Each rotation of points are divided into buffers which holds the location of points for that specific phase of rotation
+        for (let buffer = 0; buffer < buffers; buffer++) {
+            //It is the list of location of points for this specific buffer
+            let tempBLP = [];
+            for (let i = 0; i < this.#rotationCenters.length; i++) {
+                //sectionAngle is in degrees. I changed it to radian.
+                let tempPoint = this.#p.createVector(
+                    this.#rotationCenters[i].x +
+                        this.#diameter *
+                            Math.cos((this.#sectionAngle * buffer * Math.PI) / 180 + this.#intPhaseList[i]),
+                    this.#rotationCenters[i].y +
+                        this.#diameter *
+                            Math.sin((this.#sectionAngle * buffer * Math.PI) / 180 + this.#intPhaseList[i]),
+                );
+                tempBLP.push(tempPoint);
+            }
+            this.BLP.push(tempBLP);
         }
-        #pointsRotation()
-        {
-                //it divides a complete circle into sections (buffers) with angles equal to sectionAngle
-                let buffers = 360/this.#sectionAngle;
-                //Each rotation of points are divided into buffers which holds the location of points for that specific phase of rotation
-                for( let buffer = 0; buffer< buffers; buffer++ )
-                {
-                        //It is the list of location of points for this specific buffer
-                        let tempBLP=[];
-                        for(let i = 0; i < this.#rotationCenters.length; i++)
-                        {
-                                //sectionAngle is in degrees. I changed it to radian.
-                                let tempPoint = this.#p.createVector( (this.#rotationCenters[i].x+ this.#diameter*Math.cos(this.#sectionAngle*buffer*Math.PI/180 + this.#intPhaseList[i])),
-                                                                (this.#rotationCenters[i].y+ this.#diameter*Math.sin(this.#sectionAngle*buffer*Math.PI/180 +this.#intPhaseList[i])))
-                                tempBLP.push(tempPoint)
-                        }
-                        this.BLP.push(tempBLP)
-                }
-        }
+    }
 }
 /*
 +---------------------------------------------------------------------------------------+
@@ -107,5 +107,3 @@ BLP[][]: Stands for buffer,location,points. this is a 2-dimensional array, a lis
 pointsDistributer(): It is called once the object is created to randomly distribute points, one point for each cell.
                 It adds the points in the form of p5.vector to the rotationCenters array.
 */
-
-

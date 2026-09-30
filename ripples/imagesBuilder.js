@@ -1,7 +1,5 @@
-class ImagesBuilder
-{
-    constructor(skippedPixels,pointsManager,colorTheme, p)
-    {
+class ImagesBuilder {
+    constructor(skippedPixels, pointsManager, colorTheme, p) {
         this.#p = p;
         this.#imageWidth = screen.width;
         this.#imageHeight = screen.height;
@@ -9,49 +7,50 @@ class ImagesBuilder
         this.#colorTheme = colorTheme;
         this.#skippedPixels = skippedPixels;
         //the idea of using exponentiation formula to map the distance to the RGB components is inspired by Kazuki Umeda[37].
-        //The mapping formula is obtained as y = (distance/c)^2+b using the Desmos graph tool and is used to map the distance to the red, 
-        // green and blue components of the color. It starts from base color components at the location of the nearest point and faints to white when 
+        //The mapping formula is obtained as y = (distance/c)^2+b using the Desmos graph tool and is used to map the distance to the red,
+        // green and blue components of the color. It starts from base color components at the location of the nearest point and faints to white when
         // the distance increases. the values for b and c attributes are obtained by try and error using graph tool in the Desmos
-        //pallet is an object to hold the base color, which is used as the b attribute in the mapping formula, and the c attribute, for each theme. 
-        
-        this.#pallet =
-                    {
-                        "Ocean":
-                            {
-                                baseColor:[65,105,220], // [b for red, b for green, b for blue]
-                                c:[29, 32, 64] // [c for red, c for green, c for blue]
-                            },
-                        "Sun":
-                            {
-                                baseColor:[200,200,0], // [b for red, b for green, b for blue]
-                                c:[53, 53, 19] // [c for red, c for green, c for blue]
-                            },
-                        "Night":
-                            {
-                                baseColor:[15,15,50], // [b for red, b for green, b for blue]
-                                c:[26, 26, 28] // [c for red, c for green, c for blue]
-                            },
-                        "Green":
-                            {
-                                baseColor:[0,150,0], // [b for red, b for green, b for blue]
-                                c:[25, 39, 25] // [c for red, c for green, c for blue]
-                            }    
-                    }
+        //pallet is an object to hold the base color, which is used as the b attribute in the mapping formula, and the c attribute, for each theme.
 
-        this.#imageCreator()
-        
+        this.#pallet = {
+            Ocean: {
+                baseColor: [65, 105, 220], // [b for red, b for green, b for blue]
+                c: [29, 32, 64], // [c for red, c for green, c for blue]
+            },
+            Sun: {
+                baseColor: [200, 200, 0], // [b for red, b for green, b for blue]
+                c: [53, 53, 19], // [c for red, c for green, c for blue]
+            },
+            Night: {
+                baseColor: [15, 15, 50], // [b for red, b for green, b for blue]
+                c: [26, 26, 28], // [c for red, c for green, c for blue]
+            },
+            Green: {
+                baseColor: [0, 150, 0], // [b for red, b for green, b for blue]
+                c: [25, 39, 25], // [c for red, c for green, c for blue]
+            },
+        };
+
+        this.#imageCreator();
     }
     //this method returns a deep copy of the originImageArray[buffer] with adjusted sizes of width and heigh
-    getAdjustedGallery(width, height)
-    {
-        let tempImageArray =[];
+    getAdjustedGallery(width, height) {
+        let tempImageArray = [];
 
-        for(let buffer = 0; buffer < this.#originImageArray.length; buffer++)
-        {
-            tempImageArray.push(this.#p.createImage(width,height))
-            
-            tempImageArray[buffer].copy(this.#originImageArray[buffer], 0, 0,this.#originImageArray[buffer].width, this.#originImageArray[buffer].height,
-                                                    0 ,0 ,tempImageArray[buffer].width, tempImageArray[buffer].height) 
+        for (let buffer = 0; buffer < this.#originImageArray.length; buffer++) {
+            tempImageArray.push(this.#p.createImage(width, height));
+
+            tempImageArray[buffer].copy(
+                this.#originImageArray[buffer],
+                0,
+                0,
+                this.#originImageArray[buffer].width,
+                this.#originImageArray[buffer].height,
+                0,
+                0,
+                tempImageArray[buffer].width,
+                tempImageArray[buffer].height,
+            );
         }
         return tempImageArray;
     }
@@ -59,72 +58,81 @@ class ImagesBuilder
     #pointsManager = null;
     #colorTheme = null;
     #skippedPixels = null;
-    //the wave images will be created based on the size of the user's screen for the first time. 
+    //the wave images will be created based on the size of the user's screen for the first time.
     //using screen.width and screen.height inspired by W3schools[30]
     #imageWidth = null;
     #imageHeight = null;
-    #pallet={};
+    #pallet = {};
     //it is an array to hold all the image of each buffer in the p5.Graphics format
-    #originImageArray=[];
+    #originImageArray = [];
 
     // for color mapping based on the formula of ((distance/c)**2+b)Desmos tools is used to determine the values for c and b to get the desired
     // colors at pixels close th the featured points to pixels farther away from points where color fades to white(255,255,255).
-    #colorMapping = (distance, b, c) =>
-    {
-        return ((distance/c)**2+b)
-    }
+    #colorMapping = (distance, b, c) => {
+        return (distance / c) ** 2 + b;
+    };
 
     //builds the originImageArray
-    #imageCreator()
-    {
-        for(let buffer = 0; buffer < this.#pointsManager.BLP.length; buffer++)
-        {
-            let tempP5Image = this.#p.createImage(this.#imageWidth,this.#imageHeight);
+    #imageCreator() {
+        for (let buffer = 0; buffer < this.#pointsManager.BLP.length; buffer++) {
+            let tempP5Image = this.#p.createImage(this.#imageWidth, this.#imageHeight);
             tempP5Image.pixelDensity(1);
             tempP5Image.loadPixels();
-            for( let imageY = 0; imageY< this.#imageHeight; imageY++)
-            {
-                for(let imageX = 0; imageX < this.#imageWidth; imageX+=(1+this.#skippedPixels))
-                {
-                   let squareMinDistance = Infinity;
-                    for(let i = 0; i < this.#pointsManager.BLP[buffer].length; i++)
-                    {
+            for (let imageY = 0; imageY < this.#imageHeight; imageY++) {
+                for (let imageX = 0; imageX < this.#imageWidth; imageX += 1 + this.#skippedPixels) {
+                    let squareMinDistance = Infinity;
+                    for (let i = 0; i < this.#pointsManager.BLP[buffer].length; i++) {
                         //Phthagorean Theorm is used to calculate the square of distance between the pixel and points
                         //this approach optimize the processing time in comparision with dist() as we do not need to square root it in
                         //every calculation
-                        if(squareMinDistance > ((imageX-this.#pointsManager.BLP[buffer][i].x)**2 + (imageY-this.#pointsManager.BLP[buffer][i].y)**2))
-                        {
-                            squareMinDistance = (imageX-this.#pointsManager.BLP[buffer][i].x)**2 + (imageY-this.#pointsManager.BLP[buffer][i].y)**2
+                        if (
+                            squareMinDistance >
+                            (imageX - this.#pointsManager.BLP[buffer][i].x) ** 2 +
+                                (imageY - this.#pointsManager.BLP[buffer][i].y) ** 2
+                        ) {
+                            squareMinDistance =
+                                (imageX - this.#pointsManager.BLP[buffer][i].x) ** 2 +
+                                (imageY - this.#pointsManager.BLP[buffer][i].y) ** 2;
                         }
                     }
-                        //imageX and imageY are the cartisian coordinates of the pixel in the image.
-                        // the index value of a pixel in pixels[]  with x and y coordinationis is equal to the (x+y*width)*4 , 
-                         // inspired by Kazuki Umeda,https://youtu.be/kUexPZMIwuA?si=v1Nh5rFZDiAAONKh 
+                    //imageX and imageY are the cartisian coordinates of the pixel in the image.
+                    // the index value of a pixel in pixels[]  with x and y coordinationis is equal to the (x+y*width)*4 ,
+                    // inspired by Kazuki Umeda,https://youtu.be/kUexPZMIwuA?si=v1Nh5rFZDiAAONKh
                     let minDistance = Math.sqrt(squareMinDistance);
-                    tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+0] = this.#colorMapping(minDistance,this.#pallet[this.#colorTheme].baseColor[0],this.#pallet[this.#colorTheme].c[0]);
-                    tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+1] = this.#colorMapping(minDistance,this.#pallet[this.#colorTheme].baseColor[1],this.#pallet[this.#colorTheme].c[1]);
-                    tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+2] = this.#colorMapping(minDistance,this.#pallet[this.#colorTheme].baseColor[2],this.#pallet[this.#colorTheme].c[2]);
-                    tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+3] = 255;
+                    tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 0] = this.#colorMapping(
+                        minDistance,
+                        this.#pallet[this.#colorTheme].baseColor[0],
+                        this.#pallet[this.#colorTheme].c[0],
+                    );
+                    tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 1] = this.#colorMapping(
+                        minDistance,
+                        this.#pallet[this.#colorTheme].baseColor[1],
+                        this.#pallet[this.#colorTheme].c[1],
+                    );
+                    tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 2] = this.#colorMapping(
+                        minDistance,
+                        this.#pallet[this.#colorTheme].baseColor[2],
+                        this.#pallet[this.#colorTheme].c[2],
+                    );
+                    tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 3] = 255;
 
-                    for(let j = 1; j<=this.#skippedPixels; j++)
-                    {
-                        if((imageX+j) < this.#imageWidth )
-                        {
-                            tempP5Image.pixels[(tempP5Image.width*imageY+imageX+j)*4+0] = tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+0]
-                            tempP5Image.pixels[(tempP5Image.width*imageY+imageX+j)*4+1] = tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+1] 
-                            tempP5Image.pixels[(tempP5Image.width*imageY+imageX+j)*4+2] = tempP5Image.pixels[(tempP5Image.width*imageY+imageX)*4+2]
-                            tempP5Image.pixels[(tempP5Image.width*imageY+imageX+j)*4+3] = 255;
-                        }
-                        else
-                        {
+                    for (let j = 1; j <= this.#skippedPixels; j++) {
+                        if (imageX + j < this.#imageWidth) {
+                            tempP5Image.pixels[(tempP5Image.width * imageY + imageX + j) * 4 + 0] =
+                                tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 0];
+                            tempP5Image.pixels[(tempP5Image.width * imageY + imageX + j) * 4 + 1] =
+                                tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 1];
+                            tempP5Image.pixels[(tempP5Image.width * imageY + imageX + j) * 4 + 2] =
+                                tempP5Image.pixels[(tempP5Image.width * imageY + imageX) * 4 + 2];
+                            tempP5Image.pixels[(tempP5Image.width * imageY + imageX + j) * 4 + 3] = 255;
+                        } else {
                             break;
                         }
                     }
-
                 }
             }
             tempP5Image.updatePixels();
-            this.#originImageArray[buffer]=(tempP5Image);
+            this.#originImageArray[buffer] = tempP5Image;
         }
     }
 }

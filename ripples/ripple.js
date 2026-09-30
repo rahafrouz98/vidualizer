@@ -1,7 +1,5 @@
-class Ripple
-{
-    constructor(xPos,yPos,width,height,theme,gallery, freqBand, sectionAngle, p)
-    {
+class Ripple {
+    constructor(xPos, yPos, width, height, theme, gallery, freqBand, sectionAngle, p) {
         this.#p = p;
         this.xPos = xPos;
         this.yPos = yPos;
@@ -13,7 +11,7 @@ class Ripple
         this.#p = p;
         this.#windowWidthHolder = p.windowWidth;
         this.#windowHeightHolder = p.windowHeight;
-        this.#sectionAngle = sectionAngle
+        this.#sectionAngle = sectionAngle;
     }
     sensitivity = 0.3;
     xPos = null;
@@ -24,55 +22,52 @@ class Ripple
     gallery = null;
     theme = null;
 
-    updateSize()
-    {
-        let newRippleWidth = this.#p.windowWidth*(this.width)/this.#windowWidthHolder;
-        let newRippleHeight = this.#p.windowHeight*(this.height)/this.#windowHeightHolder;
+    updateSize() {
+        let newRippleWidth = (this.#p.windowWidth * this.width) / this.#windowWidthHolder;
+        let newRippleHeight = (this.#p.windowHeight * this.height) / this.#windowHeightHolder;
         this.width = newRippleWidth;
         this.height = newRippleHeight;
-        let newxPos = this.#p.windowWidth*this.xPos/this.#windowWidthHolder;
-        let newyPos = this.#p.windowHeight*this.yPos/this.#windowHeightHolder;
+        let newxPos = (this.#p.windowWidth * this.xPos) / this.#windowWidthHolder;
+        let newyPos = (this.#p.windowHeight * this.yPos) / this.#windowHeightHolder;
         this.xPos = newxPos;
         this.yPos = newyPos;
-        //update #windowWidthHolder and #windowHeightHolder for the next window's size change, when the 
+        //update #windowWidthHolder and #windowHeightHolder for the next window's size change, when the
         //function is calledagain
         this.#windowWidthHolder = this.#p.windowWidth;
         this.#windowHeightHolder = this.#p.windowHeight;
     }
-    draw = function()
-    {
+    draw = function () {
         // the instant energy of the specific frequency band of the playing music
         let instantEnergy = soundApp.musicAnalyzer.instantEnergy[this.freqBand];
         //the average energy of the specific frequency band of the playing music
         let averageEnergy = soundApp.musicAnalyzer.averageEnergy[this.freqBand];
-        // Increasing this factor (decreasing the sensitivity property) reduces the ripple's sensitivity to music 
-        // energy, causing the animation to move slower, and vice versa. This factor helps achieve an appropriate 
+        // Increasing this factor (decreasing the sensitivity property) reduces the ripple's sensitivity to music
+        // energy, causing the animation to move slower, and vice versa. This factor helps achieve an appropriate
         // ripple speed for all music styles, regardless of whether their average energy is low or high.
-        let speedFactor = averageEnergy*(1-this.sensitivity);
+        let speedFactor = averageEnergy * (1 - this.sensitivity);
         //Updates the speed using quartic function. It keeps the speed low at lower energies and increase the speed much faster at higher energies.
-        this.#speed = (instantEnergy/(1+speedFactor))**4;
+        this.#speed = (instantEnergy / (1 + speedFactor)) ** 4;
         //the buffer ≡ bufferLog in mod (360/this.#sectionAngle) , in modular arithmetic
         //I used this formula to reset the buffer  every 360 degree and simulate rotation
-        let buffer = this.#bufferLog%(Math.floor(360/this.#sectionAngle));
-        this.#rippleDraw(buffer)
-        //angle will be increased by the value of the speed 
-        this.#angle+=this.#speed;
-    
-        //the bufferLog is updated for the next frame
-        this.#bufferLog = Math.floor(this.#angle/this.#sectionAngle)
-    }
+        let buffer = this.#bufferLog % Math.floor(360 / this.#sectionAngle);
+        this.#rippleDraw(buffer);
+        //angle will be increased by the value of the speed
+        this.#angle += this.#speed;
 
-    #p 
+        //the bufferLog is updated for the next frame
+        this.#bufferLog = Math.floor(this.#angle / this.#sectionAngle);
+    };
+
+    #p;
     #bufferLog = 0;
-    #angle = 0; 
+    #angle = 0;
     #speed = 0;
     #windowWidthHolder = null;
     #windowHeightHolder = null;
-    #sectionAngle
+    #sectionAngle;
 
-    #rippleDraw(buffer)
-    {
-        this.#p.image(this.gallery[buffer],this.xPos,this.yPos);  
+    #rippleDraw(buffer) {
+        this.#p.image(this.gallery[buffer], this.xPos, this.yPos);
     }
 }
 /*
@@ -137,4 +132,3 @@ draw(): This is getting the instant energy and average energy of a specific freq
 #rippleDraw(buffer): This function draws an image from the gallery list which its index is equal to the buffer.
 
 */
-

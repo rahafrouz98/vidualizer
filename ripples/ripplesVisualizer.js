@@ -1,165 +1,171 @@
-class RipplesVisualizer
-{
-    constructor(p)
-    {
+class RipplesVisualizer {
+    constructor(p) {
         this.name = "Ripples";
         this.renderingMode = "p2d";
         this.#p = p;
-        this.#points = new PointsManager(this.#gridSize,this.#sectionAngle,p);
+        this.#points = new PointsManager(this.#gridSize, this.#sectionAngle, p);
         //initialize four ripples inside a js object using string names for the properties[25]
-        for (let i = 0; i < this.#themes.length; i++)
-        {    
-            this.#imagesBuilders[this.#themes[i]] = new ImagesBuilder(this.#skippedPixels,this.#points,this.#themes[i],p);
-            this.#ripplesArray.push(new Ripple(0,0,p.width, p.height,this.#themes[i],this.#imagesBuilders[this.#themes[i]].getAdjustedGallery(p.width,p.height), this.#freqBands[i], this.#sectionAngle, p))
+        for (let i = 0; i < this.#themes.length; i++) {
+            this.#imagesBuilders[this.#themes[i]] = new ImagesBuilder(
+                this.#skippedPixels,
+                this.#points,
+                this.#themes[i],
+                p,
+            );
+            this.#ripplesArray.push(
+                new Ripple(
+                    0,
+                    0,
+                    p.width,
+                    p.height,
+                    this.#themes[i],
+                    this.#imagesBuilders[this.#themes[i]].getAdjustedGallery(p.width, p.height),
+                    this.#freqBands[i],
+                    this.#sectionAngle,
+                    p,
+                ),
+            );
         }
         this.#selectedRipple = this.#ripplesArray[0];
         this.#ripplesMenu = new RipplesMenu(p);
-        this.#ripplesMenu.colorRadio.changed(()=>this.#updateRippleColor(this.#selectedRipple));
-        this.#ripplesMenu.freqRadio.changed(()=>this.#selectedRipple.freqBand = this.#ripplesMenu.freqRadio.value());
-        this.#ripplesMenu.layoutRadio.changed(()=>{ 
-                                                  this.#updateRipplesLayout()
-                                                  this.#ripplesMenu.rippleSelectorUpdate(this.#ripplesMenu.layoutRadio.value())
-                                                });
-        this.#ripplesMenu.rippleSelector.changed(()=>{
-                                                    this.#selectedRipple = this.#ripplesArray[parseInt(this.#ripplesMenu.rippleSelector.value())-1]
-                                                    this.#ripplesMenu.colorRadio.selected(this.#selectedRipple.theme);
-                                                    this.#ripplesMenu.freqRadio.selected(this.#selectedRipple.freqBand);
-                                                    this.#isHighlight = true;
-                                                    setTimeout(()=>this.#isHighlight = false, 2000);
-                                                    //It removes focus from the rippleSelector[23]. Otherwise, when numbers are pressed on the keyboard, the shortcut keys for 
-                                                    // selecting the visualization tools will not work and instead they change the selection on in the rippleSelector.
-                                                    document.getElementById("rippleSelector").blur();
-                                                }
-                                            );
-        this.#ripplesMenu.sensitivityBar.changed(()=>{this.#selectedRipple.sensitivity = this.#ripplesMenu.sensitivityBar.value();
-                                                    this.#ripplesMenu.sensitivityValue.html(this.#ripplesMenu.sensitivityBar.value())
-        })
+        this.#ripplesMenu.colorRadio.changed(() => this.#updateRippleColor(this.#selectedRipple));
+        this.#ripplesMenu.freqRadio.changed(
+            () => (this.#selectedRipple.freqBand = this.#ripplesMenu.freqRadio.value()),
+        );
+        this.#ripplesMenu.layoutRadio.changed(() => {
+            this.#updateRipplesLayout();
+            this.#ripplesMenu.rippleSelectorUpdate(this.#ripplesMenu.layoutRadio.value());
+        });
+        this.#ripplesMenu.rippleSelector.changed(() => {
+            this.#selectedRipple = this.#ripplesArray[parseInt(this.#ripplesMenu.rippleSelector.value()) - 1];
+            this.#ripplesMenu.colorRadio.selected(this.#selectedRipple.theme);
+            this.#ripplesMenu.freqRadio.selected(this.#selectedRipple.freqBand);
+            this.#isHighlight = true;
+            setTimeout(() => (this.#isHighlight = false), 2000);
+            //It removes focus from the rippleSelector[23]. Otherwise, when numbers are pressed on the keyboard, the shortcut keys for
+            // selecting the visualization tools will not work and instead they change the selection on in the rippleSelector.
+            document.getElementById("rippleSelector").blur();
+        });
+        this.#ripplesMenu.sensitivityBar.changed(() => {
+            this.#selectedRipple.sensitivity = this.#ripplesMenu.sensitivityBar.value();
+            this.#ripplesMenu.sensitivityValue.html(this.#ripplesMenu.sensitivityBar.value());
+        });
         //initialize the layout in the first place
         this.#updateRipplesLayout();
     }
 
     name = null;
-	renderingMode = "p2d";
+    renderingMode = "p2d";
 
-    draw()
-    {
-      
-        for(let ripple = 0; ripple < parseInt(this.#ripplesMenu.layoutRadio.value()); ripple++)
-        {
+    draw() {
+        for (let ripple = 0; ripple < parseInt(this.#ripplesMenu.layoutRadio.value()); ripple++) {
             this.#ripplesArray[ripple].draw();
         }
         this.#highlighter();
     }
-    onResize()
-    {
-        for(let ripple = 0; ripple < this.#ripplesArray.length; ripple++)
-        {
+    onResize() {
+        for (let ripple = 0; ripple < this.#ripplesArray.length; ripple++) {
             this.#ripplesArray[ripple].updateSize();
-            this.#ripplesArray[ripple].gallery = this.#imagesBuilders[this.#ripplesArray[ripple].theme].getAdjustedGallery(this.#ripplesArray[ripple].width,this.#ripplesArray[ripple].height)
+            this.#ripplesArray[ripple].gallery = this.#imagesBuilders[
+                this.#ripplesArray[ripple].theme
+            ].getAdjustedGallery(this.#ripplesArray[ripple].width, this.#ripplesArray[ripple].height);
         }
     }
-    onoffMenu()
-    {
+    onoffMenu() {
         this.#ripplesMenu.isMenuActive = !this.#ripplesMenu.isMenuActive;
         this.#ripplesMenu.showAndHideMenu();
     }
-    mouseMoved()
-    {
-        this.#ripplesMenu.mouseMoved()
+    mouseMoved() {
+        this.#ripplesMenu.mouseMoved();
     }
-    keyPressed(keycode)
-    {
-        this.#ripplesMenu.keyPressed(keycode)
+    keyPressed(keycode) {
+        this.#ripplesMenu.keyPressed(keycode);
     }
 
-    #p = null
+    #p = null;
     #skippedPixels = 7;
     #gridSize = 4;
     #sectionAngle = 10;
-    #points = null
+    #points = null;
     #ripplesArray = [];
-    #selectedRipple=null;
-    #freqBands = ["audible", "bass", "mid", "highMid"]
+    #selectedRipple = null;
+    #freqBands = ["audible", "bass", "mid", "highMid"];
     #themes = ["Ocean", "Sun", "Night", "Green"];
-    #imagesBuilders ={};
-    #ripplesMenu=null;
+    #imagesBuilders = {};
+    #ripplesMenu = null;
     #isHighlight = false;
 
-    #updateRippleColor = (ripple)=>
-    { 
-        ripple.gallery = this.#imagesBuilders[this.#ripplesMenu?.colorRadio.value()]?.getAdjustedGallery(ripple.width,ripple.height);
+    #updateRippleColor = (ripple) => {
+        ripple.gallery = this.#imagesBuilders[this.#ripplesMenu?.colorRadio.value()]?.getAdjustedGallery(
+            ripple.width,
+            ripple.height,
+        );
         ripple.theme = this.#ripplesMenu?.colorRadio.value();
-    }
+    };
 
-    #rippleShapper = (ripple,style)=>
-    {
+    #rippleShapper = (ripple, style) => {
         //hh:horizontal half screen ,  f: full screen , vh: vertical half screen  , q:quarter screen
-        if ( style == "f" || style == "hh") 
-        {
-            ripple.width = this.#p.width; 
+        if (style == "f" || style == "hh") {
+            ripple.width = this.#p.width;
+        } else {
+            ripple.width = this.#p.width / 2;
         }
-        else 
-        {
-            ripple.width = this.#p.width/2;
-        } 
-        if(style == "f" || style == "vh")
-        {
-            ripple.height = this.#p.height; 
+        if (style == "f" || style == "vh") {
+            ripple.height = this.#p.height;
+        } else {
+            ripple.height = this.#p.height / 2;
         }
-        else 
-        {
-            ripple.height = this.#p.height/2; 
-        }
-        ripple.gallery= this.#imagesBuilders[ripple.theme].getAdjustedGallery(ripple.width,ripple.height)
-    }
-    
-    #updateRipplesLayout= ()=>
-    {
+        ripple.gallery = this.#imagesBuilders[ripple.theme].getAdjustedGallery(ripple.width, ripple.height);
+    };
+
+    #updateRipplesLayout = () => {
         //using switch statement is inspired by W3schools[24]
-       switch (parseInt(this.#ripplesMenu.layoutRadio.value()))
-       {
-            case 1: 
+        switch (parseInt(this.#ripplesMenu.layoutRadio.value())) {
+            case 1:
                 this.#rippleShapper(this.#ripplesArray[0], "f"); // positions the first ripple of the ripplesArray in the full screen
                 break;
             case 2:
                 //positions the first and second array  in a vertical orientation
                 this.#rippleShapper(this.#ripplesArray[0], "vh");
                 this.#rippleShapper(this.#ripplesArray[1], "vh");
-                this.#ripplesArray[1].xPos = this.#p.width/2; 
+                this.#ripplesArray[1].xPos = this.#p.width / 2;
                 break;
             case 3:
                 //postions three ripples. First ripple at the left top, second at top right and third at bottom
                 this.#rippleShapper(this.#ripplesArray[0], "q");
                 this.#rippleShapper(this.#ripplesArray[1], "q");
-                this.#ripplesArray[1].xPos = this.#p.width/2;
+                this.#ripplesArray[1].xPos = this.#p.width / 2;
                 this.#rippleShapper(this.#ripplesArray[2], "hh");
-                this.#ripplesArray[2].yPos = this.#p.height/2;
+                this.#ripplesArray[2].yPos = this.#p.height / 2;
                 break;
             case 4:
                 //positions 4 ways on the screan, each one covers a quarter of screen
                 this.#rippleShapper(this.#ripplesArray[0], "q");
                 this.#rippleShapper(this.#ripplesArray[1], "q");
-                this.#ripplesArray[1].xPos = this.#p.width/2;
+                this.#ripplesArray[1].xPos = this.#p.width / 2;
                 this.#rippleShapper(this.#ripplesArray[2], "q");
-                this.#ripplesArray[2].yPos = this.#p.height/2;
+                this.#ripplesArray[2].yPos = this.#p.height / 2;
                 this.#rippleShapper(this.#ripplesArray[3], "q");
-                this.#ripplesArray[3].yPos = this.#p.height/2;
-                this.#ripplesArray[3].xPos = this.#p.width/2;
-       }
-    }
+                this.#ripplesArray[3].yPos = this.#p.height / 2;
+                this.#ripplesArray[3].xPos = this.#p.width / 2;
+        }
+    };
 
-    #highlighter()
-    {
-        if(this.#isHighlight)
-        {
+    #highlighter() {
+        if (this.#isHighlight) {
             this.#p.push();
             this.#p.noFill();
             this.#p.strokeWeight(10);
-            this.#p.stroke(255,0,0,150);
-            this.#p.rect(this.#selectedRipple.xPos, this.#selectedRipple.yPos, this.#selectedRipple.width,this.#selectedRipple.height);
+            this.#p.stroke(255, 0, 0, 150);
+            this.#p.rect(
+                this.#selectedRipple.xPos,
+                this.#selectedRipple.yPos,
+                this.#selectedRipple.width,
+                this.#selectedRipple.height,
+            );
             this.#p.pop();
         }
-    } 
+    }
 }
 /*
 +-------------------------------------------------------------------------------+

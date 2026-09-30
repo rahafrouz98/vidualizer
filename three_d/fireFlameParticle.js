@@ -1,81 +1,67 @@
-class FireFlameParticle extends Object3d
-{
-    constructor(centerPoint,objectColor,objectSize, speed, p)
-    {
-        super(centerPoint,objectColor,objectSize, null, p);
+class FireFlameParticle extends Object3d {
+    constructor(centerPoint, objectColor, objectSize, speed, p) {
+        super(centerPoint, objectColor, objectSize, null, p);
         this.#speed = speed;
         this.#initialSpeed = speed;
         this.#birthTime = p.millis();
         this.#direction = this.#directionInitializer();
     }
-    isExpired=false;
-    draw()
-    {
-        if(!this.isExpired)
-        {
+    isExpired = false;
+    draw() {
+        if (!this.isExpired) {
             this.p.push();
-            if (this.normalMaterial)
-            {
+            if (this.normalMaterial) {
                 this.p.normalMaterial();
-            }
-            else
-            {
+            } else {
                 this.p.noStroke();
-                this.p.fill(this.color)
+                this.p.fill(this.color);
             }
-        
+
             this.p.translate(this.centerPoint);
-            this.p.ellipsoid(this.size,this.size,this.size*2);
+            this.p.ellipsoid(this.size, this.size, this.size * 2);
             this.p.pop();
-            this.#updateParticle()
+            this.#updateParticle();
         }
     }
-    #lifetime = 250//Milliseconds
-    #birthTime=null;
+    #lifetime = 250; //Milliseconds
+    #birthTime = null;
     #age = 0;
-    #direction=null;
-    #speed=null;
+    #direction = null;
+    #speed = null;
     #initialSpeed = null;
-    #growthFactor = 0.005
+    #growthFactor = 0.005;
     #orificeAngleFactor = 0.3;
     #initialZ = 0;
 
-    #directionInitializer()
-    {
-        let x = this.p.random(-this.#orificeAngleFactor,this.#orificeAngleFactor);
-        let y = this.p.random(-this.#orificeAngleFactor,this.#orificeAngleFactor);
+    #directionInitializer() {
+        let x = this.p.random(-this.#orificeAngleFactor, this.#orificeAngleFactor);
+        let y = this.p.random(-this.#orificeAngleFactor, this.#orificeAngleFactor);
         let z = 1;
-        let tempVector = this.p.createVector(x,y,z);
-        return  p5.Vector.normalize(tempVector);
+        let tempVector = this.p.createVector(x, y, z);
+        return p5.Vector.normalize(tempVector);
     }
-    #mapAgeToAlpha()
-    {
-        let factor = this.#lifetime/(255**0.25)
-    
-        let alpha = 255-(this.#age/factor)**4;
+    #mapAgeToAlpha() {
+        let factor = this.#lifetime / 255 ** 0.25;
+
+        let alpha = 255 - (this.#age / factor) ** 4;
         return alpha;
     }
-    #mapAgeToSpeed()
-    {
-        let newSpeed = this.#initialSpeed-(this.#age * this.#initialSpeed/this.#lifetime)
+    #mapAgeToSpeed() {
+        let newSpeed = this.#initialSpeed - (this.#age * this.#initialSpeed) / this.#lifetime;
         return newSpeed;
     }
-    #updateParticle()
-    {
+    #updateParticle() {
         let updatedAlpha = this.#mapAgeToAlpha();
-        if (updatedAlpha<=0)
-        {
+        if (updatedAlpha <= 0) {
             this.isExpired = true;
-        }
-        else
-        {
+        } else {
             this.color.setAlpha(updatedAlpha);
-            let vectorSpeed = this.p.createVector(this.#direction.x, this.#direction.y, this.#direction.z)
+            let vectorSpeed = this.p.createVector(this.#direction.x, this.#direction.y, this.#direction.z);
             vectorSpeed.mult(this.#speed);
             this.centerPoint.add(vectorSpeed);
-            this.#age=this.p.millis()- this.#birthTime;
+            this.#age = this.p.millis() - this.#birthTime;
             this.#speed = this.#mapAgeToSpeed();
-           this.size = this.size+(this.centerPoint.z-this.#initialZ)*this.#growthFactor;
+            this.size = this.size + (this.centerPoint.z - this.#initialZ) * this.#growthFactor;
         }
     }
 }

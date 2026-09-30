@@ -1,30 +1,21 @@
-class Marble extends Object3d
-{
-    constructor(centerPoint,objectColor,objectSize, isNormalMaterial, p)
-    {
-        super(centerPoint,objectColor,objectSize, isNormalMaterial, p);
-        this.name = "Marble"
+class Marble extends Object3d {
+    constructor(centerPoint, objectColor, objectSize, isNormalMaterial, p) {
+        super(centerPoint, objectColor, objectSize, isNormalMaterial, p);
+        this.name = "Marble";
     }
     wobbledPoint = null;
-    draw()
-    {
+    draw() {
         this.p.push();
-        if (this.isNormalMaterial)
-        {
+        if (this.isNormalMaterial) {
             this.p.normalMaterial();
-        }
-        else
-        {
-            this.p.fill(this.color)
+        } else {
+            this.p.fill(this.color);
         }
 
-        if(this.isSelected)
-        {
+        if (this.isSelected) {
             this.p.stroke("red");
-            this.p.strokeWeight(.5);
-        }
-        else
-        {
+            this.p.strokeWeight(0.5);
+        } else {
             this.p.noStroke();
         }
         this.p.translate(this.wobbledPoint);

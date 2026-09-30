@@ -1,36 +1,27 @@
-class Tile extends Object3d
-{
-    constructor(centerPoint,objectColor,isNormalMaterial,tileWidth,tileHeight,tileThickness, p)
-    {
-        super(centerPoint,objectColor,null, isNormalMaterial,p);
+class Tile extends Object3d {
+    constructor(centerPoint, objectColor, isNormalMaterial, tileWidth, tileHeight, tileThickness, p) {
+        super(centerPoint, objectColor, null, isNormalMaterial, p);
 
         this.#width = tileWidth;
         this.#height = tileHeight;
         this.#thickness = tileThickness;
-        this.name = "Tile"
+        this.name = "Tile";
     }
-    draw()
-    {
+    draw() {
         this.p.push();
         this.p.translate(this.centerPoint);
-        if (this.isNormalMaterial)
-        {
+        if (this.isNormalMaterial) {
             this.p.normalMaterial();
+        } else {
+            this.p.fill(this.color);
         }
-        else
-        {
-            this.p.fill(this.color)
-        }
-        if(this.isSelected)
-        {
+        if (this.isSelected) {
             this.p.stroke("red");
             this.p.strokeWeight(10);
-        }
-        else
-        {
+        } else {
             this.p.noStroke();
         }
-        this.p.box(this.#width*this.scale,this.#height*this.scale,this.#thickness)
+        this.p.box(this.#width * this.scale, this.#height * this.scale, this.#thickness);
         this.p.pop();
     }
     #width = null;
